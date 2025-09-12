@@ -37,7 +37,12 @@ const useTextViewer = (
   useEffect(() => {
     if (!viewerRef.current) return;
     viewerRef.current.setText(state);
-  }, [state.text]);
+  }, [state.text, state.extrusion, state.material]);
+
+  useEffect(() => {
+    if (!viewerRef.current) return;
+    viewerRef.current.setLights(state);
+  }, [state.lighting]);
 
   return viewerRef;
 };

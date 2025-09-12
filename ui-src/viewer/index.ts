@@ -26,7 +26,9 @@ export class TextViewer {
 
   private bloomEffect?: SelectiveBloomEffect;
 
-  private text: THREE.Mesh;
+  private lightGroup = new THREE.Group();
+
+  private text!: THREE.Mesh;
 
   private clock = new THREE.Clock();
   private playing = true;
@@ -47,7 +49,6 @@ export class TextViewer {
     this.initCamera(width, height);
     if (controls) this.initControls(onZoomChange);
     this.initComposer(width, height);
-    this.initLights();
     this.initResizeObserver();
   }
 
@@ -114,24 +115,32 @@ export class TextViewer {
     this.composer.setSize(width, height);
   }
 
-  private initLights() {
+  setLights(state: State) {
+    this.scene.remove(this.lightGroup);
+    this.lightGroup.clear();
+
+    const { lighting } = state;
+    const { key, fill, rim } = lighting
     // Base illumination
-    this.scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+    this.lightGroup.add(new THREE.AmbientLight(0xffffff, 0.5));
+    this.lightGroup.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.5));
 
     // Main directional light
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    const keyLight = new THREE.DirectionalLight(key.color, key.intensity);
     keyLight.position.set(5, 10, 5);
-    this.scene.add(keyLight);
+    this.lightGroup.add(keyLight);
 
     // Fill light
-    const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    const fillLight = new THREE.DirectionalLight(fill.color, fill.intensity);
     fillLight.position.set(-5, 5, -5);
-    this.scene.add(fillLight);
+    this.lightGroup.add(fillLight);
 
     // Rim light
-    const rimLight = new THREE.DirectionalLight(0xffffff, 0.2);
+    const rimLight = new THREE.DirectionalLight(rim.color, rim.intensity);
     rimLight.position.set(0, 5, -5);
-    this.scene.add(rimLight);
+    this.lightGroup.add(rimLight);
+
+    this.scene.add(this.lightGroup);
   }
 
   setZoomLevel(distance: number) {
@@ -144,35 +153,52 @@ export class TextViewer {
   setText(state: State) {
     disposeAndRemove(this.scene, this.text);
 
+    // --- Parse SVG
     const loader = new SVGLoader();
     const data = loader.parse(state.text);
-    const shapes = data.paths.flatMap(p => p.toShapes(true));
 
-    if (shapes.length === 0) return;
+    // --- Convert paths to shapes
+    const shapes: THREE.Shape[] = data.paths.flatMap(path => path.toShapes(true));
 
-    const geometry = new THREE.ExtrudeGeometry(shapes, {
-      depth: 3,      // deeper extrusion
-      bevelEnabled: true,
-      bevelThickness: 0.05,
-      bevelSize: 0.02
-    });
+    // --- Create extrude geometry
+    const geometry = new THREE.ExtrudeGeometry(shapes, state.extrusion);
 
-    geometry.scale(0.01, 0.01, 0.01); // scale only
-    geometry.center();                 // center in origin
+    // --- Compute bounding box for normalization
+    geometry.computeBoundingBox();
+    const bbox = geometry.boundingBox!;
+    const width = bbox.max.x - bbox.min.x;
+    const height = bbox.max.y - bbox.min.y;
+    const centerX = (bbox.max.x + bbox.min.x) / 2;
+    const centerY = (bbox.max.y + bbox.min.y) / 2;
 
-    const mesh = new THREE.Mesh(
-      geometry,
-      new THREE.MeshStandardMaterial({ color: 0xffffff })
-    );
+    // --- Center geometry at origin
+    geometry.translate(-centerX, -centerY, 0);
 
-    mesh.rotation.x = Math.PI;
+    // --- Scale to fit targetSize
+    const scale = 1 / Math.max(width, height);
+    geometry.scale(scale, scale, scale);
+
+    // --- Flip vertically for Three.js coordinate system
+    // This preserves winding and keeps holes correct
+    const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ 
+      ...state.material
+    }));
+    mesh.rotation.x = Math.PI; // flips vertically
 
     this.text = mesh;
     this.scene.add(this.text);
+
+    if (this.controls) {
+      const bbox = new THREE.Box3().setFromObject(mesh);
+      const center = bbox.getCenter(new THREE.Vector3());
+      this.controls.target.copy(center);
+      this.controls.update();
+    }
   }
 
   // === Text scene ===
   async setScene(state: State) {
+    this.setLights(state);
     this.setText(state);
   }
 

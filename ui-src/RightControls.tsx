@@ -1,5 +1,8 @@
 import { State, Action } from "./reducer";
 import { Recorder } from './useRecorder';
+import ExtrusionControls from "./ExtrusionControls";
+import MaterialControls from "./MaterialControls";
+import LightingControls from "./LightingControls";
 import PlayerControls from './PlayerControls';
 import Sidebar from "./Sidebar";
 
@@ -17,7 +20,15 @@ const RightControls = ({
       modifier={"fixed-bottom"}>
       <div className="c-sidebar__scroll">
         <div className="c-sidebar__group">
-          
+          <ExtrusionControls
+            state={state.extrusion}
+            dispatch={dispatch} />
+          <MaterialControls
+            state={state.material}
+            dispatch={dispatch} />
+          <LightingControls
+            state={state.lighting}
+            dispatch={dispatch} />
         </div>
       </div>
       <div className="c-sidebar__bottom">

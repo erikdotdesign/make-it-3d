@@ -360,8 +360,7 @@
     top: -7px;
     text-transform: uppercase;
     letter-spacing: 0.75px;
-    color: var(--color-neon-magenta);
-    text-shadow: var(--shadow-neon-magenta);
+    color: var(--color-text-light);
   }
   
   &::selection {
