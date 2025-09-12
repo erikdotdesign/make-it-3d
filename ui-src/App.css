@@ -1,0 +1,196 @@
+.figma-light {
+  --color-primary: #1E1E1E;
+  --color-primary-hover: #121212;
+  --color-gray: #6E6E6E;
+  --color-gray-hover: #5A5A5A;
+  --color-bg-z0: #ffffff;
+  --color-bg-z1: #F7F7F7;
+  --color-bg-z2: #EFEFEF;
+  --color-bg-z3: #E6E6E6;
+  --color-border-z0: #EBEBEB;
+  --color-border-z1: #E3E3E3;
+  --color-border-z2: #DCDCDC;
+  --color-border-z3: #D4D4D4;
+  --color-border-glass: color-mix(in srgb, #000000 10%, transparent);
+  --color-blue: #0288D1;
+  --color-blue-hover: #026FA8;
+  --color-green: #2E7D32;
+  --color-green-hover: #256628;
+  --color-yellow: #ED6C02;
+  --color-yellow-hover: #C65A02;
+  --color-red: #D32F2F;
+  --color-red-hover: #AB2727;
+  --color-purple: #8E24AA;
+  --color-purple-hover: #691B7E;
+  --color-text-base: #000000;
+  --color-text-light: color-mix(in srgb, var(--color-text-base) 75%, transparent);
+  --color-text-lighter: color-mix(in srgb, var(--color-text-base) 50%, transparent);
+  --color-text-lightest: color-mix(in srgb, var(--color-text-base) 25%, transparent);
+  --color-text-base-on-primary: #FFFFFF;
+  --color-text-base-on-red: #FFFFFF;
+  --color-neon-cyan: var(--color-text-light);
+  --color-neon-magenta: var(--color-text-light);
+  --shadow-neon-cyan: 0px 0px 0px 1px inset var(--color-border-z2);
+  --shadow-neon-magenta: none;
+}
+
+.figma-dark {
+  --color-primary: #F7F7F7;
+  --color-primary-hover: #ffffff;
+  --color-gray: #B0B0B0;
+  --color-gray-hover: #C2C2C2;
+  --color-bg-z0: #121212;
+  --color-bg-z1: #1E1E1E;
+  --color-bg-z2: #2A2A2A;
+  --color-bg-z3: #363636;
+  --color-border-z0: #252525;
+  --color-border-z1: #303030;
+  --color-border-z2: #3B3B3B;
+  --color-border-z3: #464646;
+  --color-border-glass: color-mix(in srgb, #ffffff 10%, transparent);
+  --color-blue: #29B6F6;
+  --color-blue-hover: #4FC3F7;
+  --color-green: #66BB6A;
+  --color-green-hover: #81C784;
+  --color-yellow: #FFB74D;
+  --color-yellow-hover: #FFCC80;
+  --color-red: #EF5350;
+  --color-red-hover: #E57373;
+  --color-purple: #BA68C8;
+  --color-purple-hover: #CC8FD6;
+  --color-text-base: #ffffff;
+  --color-text-light: color-mix(in srgb, var(--color-text-base) 75%, transparent);
+  --color-text-lighter: color-mix(in srgb, var(--color-text-base) 50%, transparent);
+  --color-text-lightest: color-mix(in srgb, var(--color-text-base) 25%, transparent);
+  --color-text-base-on-primary: #000000;
+  --color-text-base-on-red: #FFFFFF;
+  --color-neon-cyan: #00FFFF;
+  --color-neon-magenta: #FF00FF;
+  --shadow-neon-cyan: 0px 0px 1px 1px inset var(--color-neon-cyan), 0px 0px 4px 0px var(--color-neon-cyan), 0px 0px 4px 0px inset var(--color-neon-cyan);
+  --shadow-neon-magenta: 0px 0px 4px var(--color-neon-magenta);
+}
+
+:root {
+  --font-family: "Tilt Neon", sans-serif;
+  --font-family-headline: "Tilt Neon", sans-serif;
+  --font-family-mono: "Tilt Neon", monospace;
+  --border-radius: 8px;
+  --control-addon-size: 40px;
+  --anim-params: 2.5s linear infinite alternate;
+}
+
+.c-app {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: var(--color-bg-z0);
+}
+
+.c-app__body {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100vw;
+  max-height: 100vh;
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+.h-pointer {
+  cursor: pointer;
+}
+
+.h-rule {
+  position: absolute;
+  background: var(--color-bg-z0);
+
+  &.h-rule--top,
+  &.h-rule--bottom {
+    width: calc(100% - 48px);
+    height: 1px;
+    left: 24px;
+  }
+
+  &.h-rule--left,
+  &.h-rule--right {
+    width: 1px;
+    height: calc(100% - 48px);
+    top: 24px;
+  }
+
+  &.h-rule--left {
+    left: 0;
+  }
+
+  &.h-rule--right {
+    right: 0;
+  }
+
+  &.h-rule--top {
+    top: 0;
+  }
+
+  &.h-rule--bottom {
+    bottom: 0;
+  }
+}
+
+.h-crosshair {
+  position: absolute;
+  width: 0px;
+  height: 0px;
+  overflow: visible;
+
+  &:before,
+  &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    background: var(--color-text-lightest);
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+  }
+
+  &:before {
+    width: 5px;
+    height: 1px;
+  }
+
+  &:after {
+    width: 1px;
+    height: 5px;
+  }
+
+  &.h-crosshair--top-left,
+  &.h-crosshair--top-right {
+    top: 0;
+  }
+
+  &.h-crosshair--bottom-left,
+  &.h-crosshair--bottom-right {
+    bottom: 0;
+  }
+
+  &.h-crosshair--top-left,
+  &.h-crosshair--bottom-left {
+    left: 0
+  }
+
+  &.h-crosshair--top-right,
+  &.h-crosshair--bottom-right {
+    right: 0;
+  }
+}
+
+.c-app__phase-label {
+  display: flex;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  color: var(--color-text-base);
+  font-family: var(--font-family);
+  font-size: 10px;
+  font-weight: normal;
+  line-height: 12px;
+}

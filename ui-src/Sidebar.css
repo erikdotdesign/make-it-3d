@@ -1,0 +1,82 @@
+.c-sidebar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: start;
+  width: 224px;
+  max-height: 100vh;
+  overflow: hidden;
+
+  &.c-sidebar--fixed-bottom {
+    .c-sidebar__scroll {
+      padding-bottom: 96px;
+    }
+    .c-sidebar__bottom {
+      position: absolute;
+      bottom: 0;
+      background: color-mix(in srgb, var(--color-bg-z0) 25%, transparent);
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 1px 0 0 inset var(--color-border-z1);
+    }
+  }
+}
+
+.c-sidebar__scroll {
+  width: 100%;
+  height: 100%;
+  padding: 16px 8px 16px 16px;
+  overflow-y: scroll;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--color-bg-z0);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--color-bg-z3);
+    border-radius: 4px;
+    box-shadow: 0 0 0 3px inset var(--color-bg-z0);
+    cursor: pointer;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-primary);
+  }
+}
+
+.c-sidebar__bottom {
+  width: 100%;
+  padding: 16px;
+  background: var(--color-bg-z0);
+}
+
+.c-sidebar__group {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 24px;
+
+  &.c-sidebar__group--row {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0;
+
+    > .c-sidebar__group:not(.c-sidebar__group--row) {
+      width: auto;
+      gap: 8px;
+      display: flex;
+      flex-direction: row;
+    }
+  }
+
+  .c-control {
+    &.c-control--color {
+      padding-top: 0;
+    }
+  }
+}
