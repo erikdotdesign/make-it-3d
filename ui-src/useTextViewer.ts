@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { TextViewer } from "./viewer";
 import { State, Action } from "./reducer";
+// import useThrottled from "./useThrottled";
 
 const useTextViewer = (
   canvasRef: React.RefObject<HTMLCanvasElement>, 
@@ -16,7 +17,7 @@ const useTextViewer = (
     const viewer = new TextViewer(canvasRef.current, { 
       width: 1200,
       height: 1200,
-      onZoomChange: (zoom: number) => dispatch({ type: "SET_ZOOM", zoom })
+      onZoomChange: (zoom: number) => dispatch({ type: "SET_CAMERA", camera: { zoom } })
     });
 
     viewer.setScene(state);
@@ -37,7 +38,22 @@ const useTextViewer = (
   useEffect(() => {
     if (!viewerRef.current) return;
     viewerRef.current.setText(state);
-  }, [state.text, state.extrusion, state.material]);
+  }, [state.text, state.material]);
+
+  useEffect(() => {
+    if (!viewerRef.current) return;
+    viewerRef.current.setCamera(state);
+  }, [state.camera]);
+
+  // useThrottled(() => {
+  //   if (!viewerRef.current) return;
+  //   viewerRef.current.setTextExtrusion(state.extrusion, state.geometryScale);
+  // }, [state.extrusion], 100);
+
+  useEffect(() => {
+    if (!viewerRef.current) return;
+    viewerRef.current.setTextExtrusion(state.extrusion, state.geometryScale);
+  }, [state.extrusion]);
 
   useEffect(() => {
     if (!viewerRef.current) return;

@@ -1,4 +1,4 @@
-import { scaleAndPositionNode } from "./helpers";
+import { scaleAndPositionNode, getAverageFontSize } from "./helpers";
 
 figma.showUI(__html__, { themeColors: true, width: 816, height: 592 });
 
@@ -13,28 +13,34 @@ const loadFromStorage = async (key: string) => {
 
 const getTextSelection = async () => {
   const selection = figma.currentPage.selection;
+  const ref = selection[0];
 
-  if (selection.length === 0 || selection[0].type !== "TEXT") {
+  if (selection.length === 0 || ref.type !== "TEXT") {
     figma.ui.postMessage({ type: "no-selection" });
     figma.notify("Select a text node");
     return;
   }
 
-  // Clone selection so we don’t affect originals
-  const clone: TextNode = selection[0].clone();
+  // Clone so original isn’t affected
+  const clone: TextNode = ref.clone();
 
-  // Flatten
+  // Flatten into vector outlines
   const node = figma.flatten([clone], figma.currentPage);
 
-  // Move the node (either the clone or the group) off-canvas
+  // --- Compute relative geometry scale ---
+  const avgFontSize = getAverageFontSize(ref);
+  const geometryScale = avgFontSize * 0.1;
+
+  // Move clone off-canvas
   node.x = figma.viewport.bounds.x + figma.viewport.bounds.width + 100;
   node.y = figma.viewport.bounds.y;
 
   try {
-    const bytes = await node.exportAsync({ format: "SVG" });
+    const svgString = await node.exportAsync({ format: "SVG_STRING" });
     figma.ui.postMessage({
       type: "text-selection",
-      svgBytes: Array.from(bytes),
+      svgString,
+      geometryScale,
     });
   } catch (err) {
     figma.notify("Error converting selection");

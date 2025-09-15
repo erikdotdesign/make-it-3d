@@ -339,6 +339,22 @@
       box-shadow: var(--shadow-neon-cyan);
     }
   }
+
+  &.c-control--light {
+    .c-control__input {
+      color: var(--color-text-light);
+    }
+  }
+
+  &.c-control--addon {
+    margin: 0 !important;
+    padding: 0 !important;
+    
+    .c-control__input {
+      padding: 0;
+      text-align: center;
+    }
+  }
 }
 
 .c-control__label {
@@ -575,4 +591,5 @@
   height: 24px;
   cursor: pointer;
   border-radius: 100%;
+  box-shadow: 0 0 0 1px var(--color-border-z1);
 }

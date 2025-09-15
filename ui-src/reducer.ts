@@ -1,9 +1,15 @@
+export type Camera = {
+  fov: number;
+  zoom: number;
+};
+
 export type Extrusion = {
   depth: number;
   bevelEnabled: boolean;
   bevelThickness: number;
   bevelSize: number;
   bevelSegments: number;
+  bevelOffset: number;
 };
 
 export type Material = {
@@ -25,8 +31,9 @@ export type Lighting = {
 
 export type State = {
   playing: boolean;
-  zoom: number;
   text: string;
+  geometryScale: number;
+  camera: Camera;
   extrusion: Extrusion;
   material: Material;
   lighting: Lighting;
@@ -37,7 +44,8 @@ export type Action =
   | { type: "HYDRATE_STATE"; state: State } 
   | { type: "SET_PLAYING", playing: boolean } 
   | { type: "SET_ZOOM"; zoom: number }
-  | { type: "SET_TEXT"; text: string }
+  | { type: "SET_TEXT"; text: string, geometryScale: number }
+  | { type: "SET_CAMERA"; camera: Partial<Camera> }
   | { type: "SET_EXTRUSION"; extrusion: Partial<Extrusion> }
   | { type: "SET_MATERIAL"; material: Partial<Material> }
   | { type: "SET_LIGHT"; key: "key" | "fill" | "rim", light: Partial<Light> }
@@ -47,10 +55,14 @@ const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "HYDRATE_STATE": return { ...state, ...action.state, hydrated: true };
     case "SET_PLAYING": return { ...state, playing: action.playing };
-    case "SET_ZOOM": return { ...state, zoom: action.zoom };
     case "SET_TEXT": return { 
       ...state, 
-      text: action.text
+      text: action.text,
+      geometryScale: action.geometryScale
+    };
+    case "SET_CAMERA": return { 
+      ...state, 
+      camera: { ...state.camera, ...action.camera }
     };
     case "SET_EXTRUSION": return { 
       ...state, 

@@ -11,14 +11,19 @@ import "./App.css";
 const App = () => {
   const [state, dispatch] = useReducer(reducer, {
     playing: true,
-    zoom: 5,
     text: "",
+    geometryScale: 1,
+    camera: {
+      fov: 75,
+      zoom: 5
+    },
     extrusion: {
       depth: 1,
       bevelEnabled: true,
       bevelThickness: 0.2,
       bevelSize: 0.1,
-      bevelSegments: 3
+      bevelSegments: 3,
+      bevelOffset: 0
     },
     material: {
       color: "#ffffff",

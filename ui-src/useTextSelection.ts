@@ -18,11 +18,10 @@ const useTextSelection = (
     const handleMessage = (event: MessageEvent) => {
       const msg = event.data.pluginMessage;
       if (msg?.type === "text-selection") {
-        const byteArray = new Uint8Array(msg.svgBytes);
-        const svgString = new TextDecoder().decode(byteArray);
         dispatch({
           type: "SET_TEXT",
-          text: svgString
+          text: msg.svgString,
+          geometryScale: msg.geometryScale,
         });
       }
     };

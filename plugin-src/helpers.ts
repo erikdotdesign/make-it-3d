@@ -61,3 +61,22 @@ export const scaleAndPositionNode = (
 
   return scale;
 };
+
+export const getAverageFontSize = (textNode: TextNode): number => {
+  if (typeof textNode.fontSize === "number") {
+    return textNode.fontSize;
+  }
+
+  // Mixed font sizes → sample per character
+  let total = 0;
+  let count = 0;
+  for (let i = 0; i < textNode.characters.length; i++) {
+    const size = textNode.getRangeFontSize(i, i + 1);
+    if (typeof size === "number") {
+      total += size;
+      count++;
+    }
+  }
+
+  return count > 0 ? total / count : 12; // fallback to default
+};

@@ -1,5 +1,6 @@
 import { State, Action } from "./reducer";
 import { Recorder } from './useRecorder';
+import CameraControls from "./CameraControls";
 import ExtrusionControls from "./ExtrusionControls";
 import MaterialControls from "./MaterialControls";
 import LightingControls from "./LightingControls";
@@ -20,7 +21,11 @@ const RightControls = ({
       modifier={"fixed-bottom"}>
       <div className="c-sidebar__scroll">
         <div className="c-sidebar__group">
+          <CameraControls
+            state={state.camera}
+            dispatch={dispatch} />
           <ExtrusionControls
+            geometryScale={state.geometryScale}
             state={state.extrusion}
             dispatch={dispatch} />
           <MaterialControls

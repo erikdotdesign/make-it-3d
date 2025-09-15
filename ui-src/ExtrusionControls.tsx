@@ -3,9 +3,11 @@ import FieldSet from "./FieldSet";
 import Control from "./Control";
 
 const ExtrusionControls = ({
+  geometryScale,
   state,
   dispatch
 }: {
+  geometryScale: number;
   state: Extrusion;
   dispatch: (action: Action) => void;
 }) => {
@@ -16,10 +18,10 @@ const ExtrusionControls = ({
         label="Depth"
         type="range"
         min={0}
-        max={100}
+        max={50}
         step={1}
         value={state.depth}
-        right={<span>{state.depth}</span>}
+        right={<span>{(state.depth * geometryScale).toFixed(2)}</span>}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           dispatch({
             type: "SET_EXTRUSION",
@@ -47,7 +49,7 @@ const ExtrusionControls = ({
         max={5}
         step={0.1}
         value={state.bevelThickness}
-        right={<span>{state.bevelThickness}</span>}
+        right={<span>{(state.bevelThickness * geometryScale).toFixed(2)}</span>}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           dispatch({
             type: "SET_EXTRUSION",
@@ -63,12 +65,28 @@ const ExtrusionControls = ({
         max={5}
         step={0.1}
         value={state.bevelSize}
-        right={<span>{state.bevelSize}</span>}
+        right={<span>{(state.bevelSize * geometryScale).toFixed(2)}</span>}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           dispatch({
             type: "SET_EXTRUSION",
             extrusion: {
               bevelSize: e.target.valueAsNumber
+            }
+          })
+        }} />
+      <Control
+        label="Bevel Segments"
+        type="range"
+        min={1}
+        max={10}
+        step={1}
+        value={state.bevelSegments}
+        right={<span>{state.bevelSegments}</span>}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          dispatch({
+            type: "SET_EXTRUSION",
+            extrusion: {
+              bevelSegments: e.target.valueAsNumber
             }
           })
         }} />

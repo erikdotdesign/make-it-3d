@@ -14,7 +14,7 @@ const MaterialControls = ({
     <FieldSet 
       label="Material">
       <TextColorControl
-        labelAlt="Color"
+        label="Color"
         value={state.color}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           dispatch({

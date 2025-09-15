@@ -46,6 +46,7 @@ const TextColorControl = ({
       {...props}
       as="input"
       type="text"
+      modifier={["light"]}
       right={
         <ColorControl
           value={props.value}

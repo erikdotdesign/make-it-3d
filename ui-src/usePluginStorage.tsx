@@ -11,7 +11,6 @@ const usePluginStorage = (
     const handleMessage = (event: MessageEvent) => {
       const msg = event.data.pluginMessage;
       if (msg.type === "storage-loaded" && msg.key === "cache" && msg.value) {
-        console.log(msg.value);
         dispatch({
           type: "HYDRATE_STATE", 
           state: {} as any
