@@ -24,54 +24,96 @@ const MaterialControls = ({
             }
           })
         }} />
-      <Control
-        label="Opacity"
-        type="range"
-        min={0}
-        max={1}
-        step={0.01}
-        value={state.opacity}
-        right={<span>{state.opacity.toFixed(2)}</span>}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          dispatch({
-            type: "SET_MATERIAL",
-            material: {
-              opacity: e.target.valueAsNumber
-            }
-          })
-        }} />
-      <Control
-        label="Metalness"
-        type="range"
-        min={0}
-        max={1}
-        step={0.01}
-        value={state.metalness}
-        right={<span>{state.metalness.toFixed(2)}</span>}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          dispatch({
-            type: "SET_MATERIAL",
-            material: {
-              metalness: e.target.valueAsNumber
-            }
-          })
-        }} />
-      <Control
-        label="Roughness"
-        type="range"
-        min={0}
-        max={1}
-        step={0.01}
-        value={state.roughness}
-        right={<span>{state.roughness.toFixed(2)}</span>}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          dispatch({
-            type: "SET_MATERIAL",
-            material: {
-              roughness: e.target.valueAsNumber
-            }
-          })
-        }} />
+        {
+          state.type === "standard"
+          ? <Control
+              label="Opacity"
+              type="range"
+              min={0}
+              max={1}
+              step={0.01}
+              value={state.opacity}
+              right={<span>{state.opacity.toFixed(2)}</span>}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                dispatch({
+                  type: "SET_MATERIAL",
+                  material: {
+                    opacity: e.target.valueAsNumber
+                  }
+                })
+              }} />
+          : null
+        }
+        <Control
+          label="Metalness"
+          type="range"
+          min={0}
+          max={1}
+          step={0.01}
+          value={state.metalness}
+          right={<span>{state.metalness.toFixed(2)}</span>}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            dispatch({
+              type: "SET_MATERIAL",
+              material: {
+                metalness: e.target.valueAsNumber
+              }
+            })
+          }} />
+        <Control
+          label="Roughness"
+          type="range"
+          min={0}
+          max={1}
+          step={0.01}
+          value={state.roughness}
+          right={<span>{state.roughness.toFixed(2)}</span>}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            dispatch({
+              type: "SET_MATERIAL",
+              material: {
+                roughness: e.target.valueAsNumber
+              }
+            })
+          }} />
+      {
+        state.type === "physical"
+        ? <>
+            <Control
+              label="Transmission"
+              type="range"
+              min={0}
+              max={1}
+              step={0.01}
+              value={state.transmission}
+              right={<span>{state.transmission.toFixed(2)}</span>}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                dispatch({
+                  type: "SET_MATERIAL",
+                  material: {
+                    transmission: e.target.valueAsNumber
+                  }
+                })
+              }} />
+            <Control
+              label="Thickness"
+              type="range"
+              min={0.01}
+              max={1}
+              step={0.01}
+              value={state.thickness}
+              right={<span>{state.thickness.toFixed(2)}</span>}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                dispatch({
+                  type: "SET_MATERIAL",
+                  material: {
+                    thickness: e.target.valueAsNumber
+                  }
+                })
+              }} />
+          </>
+        : null
+      }
     </FieldSet>
   );
 };

@@ -24,10 +24,18 @@ const PresetSelector = ({
     value: "metalic-gold",
     state: {
       material: {
+        type: "standard",
         color: "#FFD700",
+        transparent: true,
         opacity: 1,
         metalness: 0.96,
-        roughness: 0.23
+        roughness: 0.23,
+        transmission: 0,
+        thickness: 0,
+        ior: 1.5,
+        attenuationColor: "#ffffff",
+        attenuationDistance: Infinity,
+        side: "double"
       },
       lighting: {
         key: { color: "#fff", intensity: 5 },
@@ -40,10 +48,18 @@ const PresetSelector = ({
     value: "metalic-silver",
     state: {
       material: {
+        type: "standard",
         color: "#C0C0C0",
+        transparent: true,
         opacity: 1,
         metalness: 0.96,
-        roughness: 0.23
+        roughness: 0.23,
+        transmission: 0,
+        thickness: 0,
+        ior: 1.5,
+        attenuationColor: "#ffffff",
+        attenuationDistance: Infinity,
+        side: "double"
       },
       lighting: {
         key: { color: "#fff", intensity: 5 },
@@ -56,10 +72,18 @@ const PresetSelector = ({
     value: "metalic-bronze",
     state: {
       material: {
+        type: "standard",
         color: "#CD7F32",
+        transparent: true,
         opacity: 1,
         metalness: 0.96,
-        roughness: 0.23
+        roughness: 0.23,
+        transmission: 0,
+        thickness: 0,
+        ior: 1.5,
+        attenuationColor: "#ffffff",
+        attenuationDistance: Infinity,
+        side: "double"
       },
       lighting: {
         key: { color: "#fff", intensity: 5 },
@@ -70,53 +94,106 @@ const PresetSelector = ({
   },
   // Plastic
   {
-    name: "Glossy Red Plastic",
-    value: "plastic-red",
+    name: "Plastic",
+    value: "plastic",
     state: {
-      material: { color: "#ff0000", opacity: 1, metalness: 0, roughness: 0.2 },
-      lighting: { key: { color: "#fff", intensity: 4 }, fill: { color: "#fff", intensity: 2 }, rim: { color: "#fff", intensity: 0.3 } }
-    }
-  },
-  {
-    name: "Matte Blue Plastic",
-    value: "plastic-blue",
-    state: {
-      material: { color: "#1E90FF", opacity: 1, metalness: 0, roughness: 0.6 },
-      lighting: { key: { color: "#fff", intensity: 4 }, fill: { color: "#fff", intensity: 2 }, rim: { color: "#fff", intensity: 0.3 } }
+      material: { 
+        type: "standard",
+        color: "#ff0000", 
+        transparent: true,
+        opacity: 1, 
+        metalness: 0, 
+        roughness: 0.2,
+        transmission: 0,
+        thickness: 0,
+        ior: 1.5,
+        attenuationColor: "#ffffff",
+        attenuationDistance: Infinity,
+        side: "double"
+      },
+      lighting: { 
+        key: { color: "#fff", intensity: 4 }, 
+        fill: { color: "#fff", intensity: 2 }, 
+        rim: { color: "#fff", intensity: 0.3 } 
+      }
     }
   },
   // Rubber
   {
-    name: "Black Rubber",
-    value: "rubber-black",
+    name: "Rubber",
+    value: "rubber",
     state: {
-      material: { color: "#111111", opacity: 1, metalness: 0, roughness: 0.8 },
-      lighting: { key: { color: "#fff", intensity: 3 }, fill: { color: "#fff", intensity: 1.5 }, rim: { color: "#fff", intensity: 0.2 } }
-    }
-  },
-  {
-    name: "Colored Rubber (Green)",
-    value: "rubber-green",
-    state: {
-      material: { color: "#228B22", opacity: 1, metalness: 0, roughness: 0.7 },
-      lighting: { key: { color: "#fff", intensity: 3 }, fill: { color: "#fff", intensity: 1.5 }, rim: { color: "#fff", intensity: 0.2 } }
+      material: { 
+        type: "standard",
+        color: "#228B22", 
+        transparent: true,
+        opacity: 1, 
+        metalness: 0, 
+        roughness: 0.7,
+        transmission: 0,
+        thickness: 0,
+        ior: 1.5,
+        attenuationColor: "#ffffff",
+        attenuationDistance: Infinity,
+        side: "double"
+      },
+      lighting: { 
+        key: { color: "#fff", intensity: 3 }, 
+        fill: { color: "#fff", intensity: 1.5 }, 
+        rim: { color: "#fff", intensity: 0.2 } 
+      }
     }
   },
   // Glass
   {
-    name: "Clear Glass",
-    value: "glass-clear",
+    name: "Glass",
+    value: "glass",
     state: {
-      material: { color: "#ffffff", metalness: 0, roughness: 0, opacity: 0.25 },
-      lighting: { key: { color: "#fff", intensity: 5 }, fill: { color: "#fff", intensity: 2 }, rim: { color: "#fff", intensity: 0.5 } }
+      material: { 
+        type: "physical",
+        color: "#ffffff",
+        metalness: 0,
+        roughness: 0.05,
+        transparent: true,
+        opacity: 1,
+        transmission: 1,
+        thickness: 1,
+        ior: 1.5,
+        attenuationColor: "#ffffff",
+        attenuationDistance: 0.01,
+        side: "double"
+      },
+      lighting: { 
+        key: { color: "#fff", intensity: 5 }, 
+        fill: { color: "#fff", intensity: 2 }, 
+        rim: { color: "#fff", intensity: 0.5 } 
+      }
     }
   },
+  // Liquid
   {
-    name: "Tinted Glass (Blue)",
-    value: "glass-blue",
+    name: "Liquid",
+    value: "liquid",
     state: {
-      material: { color: "#87CEFA", metalness: 0, roughness: 0, opacity: 0.35 },
-      lighting: { key: { color: "#fff", intensity: 5 }, fill: { color: "#fff", intensity: 2 }, rim: { color: "#fff", intensity: 0.5 } }
+      material: {
+        type: "physical",
+        color: "#FFA500",
+        metalness: 0,
+        roughness: 0.05,
+        transparent: true,
+        opacity: 1,
+        transmission: 0.85,
+        thickness: 0.4,
+        ior: 1.35,
+        attenuationColor: "#FFA500",
+        attenuationDistance: 1.5,
+        side: "double"
+      },
+      lighting: {
+        key: { color: "#fff", intensity: 5 },
+        fill: { color: "#fff", intensity: 2 },
+        rim: { color: "#fff", intensity: 0.5 }
+      }
     }
   }];
 

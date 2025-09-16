@@ -15,10 +15,18 @@ export type Extrusion = {
 };
 
 export type Material = {
+  type: "standard" | "physical";
+  transparent: boolean;
   color: string;
   opacity: number;
   metalness: number;
   roughness: number;
+  transmission: number;
+  thickness: number;
+  ior: number;
+  attenuationColor: string;
+  attenuationDistance: number;
+  side: "front" | "back" | "double"
 };
 
 export type Light = {

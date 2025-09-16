@@ -27,10 +27,18 @@ const App = () => {
       bevelOffset: 0
     },
     material: {
+      type: "standard",
       color: "#ffffff",
+      transparent: false,
       opacity: 1,
       metalness: 0,
-      roughness: 1
+      roughness: 1,
+      transmission: 0,
+      thickness: 0,
+      ior: 1.5,
+      attenuationColor: "#ffffff",
+      attenuationDistance: Infinity,
+      side: "double"
     },
     lighting: {
       key: {

@@ -38,7 +38,12 @@ const useTextViewer = (
   useEffect(() => {
     if (!viewerRef.current) return;
     viewerRef.current.setText(state);
-  }, [state.text, state.material]);
+  }, [state.text]);
+
+  useEffect(() => {
+    if (!viewerRef.current) return;
+    viewerRef.current.setTextMaterial(state);
+  }, [state.material]);
 
   useEffect(() => {
     if (!viewerRef.current) return;

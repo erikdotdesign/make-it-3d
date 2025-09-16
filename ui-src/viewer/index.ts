@@ -154,7 +154,7 @@ export class TextViewer {
       light.position.copy(center).add(offset.multiplyScalar(dist));
       light.target.position.copy(center);
       this.lightGroup.add(light);
-      this.lightGroup.add(new THREE.DirectionalLightHelper(light, 0.5, color));
+      // this.lightGroup.add(new THREE.DirectionalLightHelper(light, 0.5, color));
       this.scene.add(light.target); // target must be in scene
       return light;
     };
@@ -212,11 +212,7 @@ export class TextViewer {
 
     this.normalizeGeometry(geometry);
 
-    const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ 
-      ...state.material,
-      transparent: true,
-      flatShading: true
-    }));
+    const mesh = new THREE.Mesh(geometry, this.createMaterial(geometry, state));
     mesh.rotation.x = Math.PI; // flip vertically
 
     this.text = mesh;
@@ -248,6 +244,86 @@ export class TextViewer {
     this.updateLights(state);
 
     if (oldGeometry) oldGeometry.dispose();
+  }
+
+  private createMaterial(geometry: THREE.BufferGeometry, state: State): THREE.Material {
+    const { 
+      type = "standard", 
+      color = "#ffffff",
+      metalness = 0, 
+      roughness = 0.5, 
+      transparent = false, 
+      opacity = 1, 
+      transmission = 0, 
+      thickness = 0.5, 
+      ior = 1.5,
+      attenuationColor = "#ffffff",
+      attenuationDistance = Infinity,
+      side = "front" 
+    } = state.material;
+
+    const threeSide =
+      side === "double" ? THREE.DoubleSide :
+      side === "back" ? THREE.BackSide :
+      THREE.FrontSide;
+
+    let material: THREE.Material;
+
+    let finalThickness = thickness;
+
+    if (type === "physical") {
+      // Calculate absolute thickness from percentage of mesh depth
+      if (geometry.boundingBox === null) geometry.computeBoundingBox();
+      const bbox = geometry.boundingBox!;
+      const depth = bbox.max.z - bbox.min.z || 0.1; // fallback if somehow zero
+      finalThickness = THREE.MathUtils.clamp(thickness, 0, 1) * depth;
+    }
+
+    if (type === "physical") {
+      material = new THREE.MeshPhysicalMaterial({
+        color,
+        metalness,
+        roughness,
+        transparent,
+        opacity,
+        transmission,
+        thickness: finalThickness,
+        ior,
+        attenuationColor,
+        attenuationDistance,
+        side: threeSide
+      });
+    } else {
+      material = new THREE.MeshStandardMaterial({
+        color,
+        metalness,
+        roughness,
+        transparent,
+        opacity,
+        side: threeSide
+      });
+    }
+
+    return material;
+  }
+
+  // --- Use in setMaterial ---
+  setTextMaterial(state: State) {
+    if (!this.text) return;
+
+    const material = this.createMaterial(this.text.geometry, state);
+
+    // Dispose old material to avoid memory leaks
+    if (this.text.material) {
+      if (Array.isArray(this.text.material)) {
+        this.text.material.forEach(m => m.dispose());
+      } else {
+        this.text.material.dispose();
+      }
+    }
+
+    this.text.material = material;
+    this.text.material.needsUpdate = true;
   }
 
   // === Text scene ===
