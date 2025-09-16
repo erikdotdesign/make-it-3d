@@ -77,7 +77,7 @@ export class TextViewer {
     Object.assign(this.controls, { 
       // enableDamping: true, 
       // dampingFactor: 0.1, 
-      // enablePan: false, 
+      enablePan: false, 
       enableZoom: true,
       // minDistance: 0,
       // maxDistance: 1
@@ -135,27 +135,41 @@ export class TextViewer {
 
     const { lighting } = state;
     const { key, fill, rim } = lighting;
-    
+
+    // --- Compute bounds from current text (or fallback) ---
+    const bbox = this.text ? new THREE.Box3().setFromObject(this.text) : new THREE.Box3();
+    const center = bbox.getCenter(new THREE.Vector3());
+    const size = bbox.getSize(new THREE.Vector3());
+    const radius = size.length() / 2 || 1; // fallback to 1 if empty
+
+    const dist = radius * 2; // base multiplier for light distance
+
     // Base illumination
     this.lightGroup.add(new THREE.AmbientLight(0xffffff, 0.5));
     this.lightGroup.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.5));
 
-    // Main directional light
-    const keyLight = new THREE.DirectionalLight(key.color, key.intensity);
-    keyLight.position.set(5, 10, 5);
-    this.lightGroup.add(keyLight);
+    // Helper to attach a directional light pointing at the subject
+    const makeDirLight = (color: THREE.ColorRepresentation, intensity: number, offset: THREE.Vector3) => {
+      const light = new THREE.DirectionalLight(color, intensity);
+      light.position.copy(center).add(offset.multiplyScalar(dist));
+      light.target.position.copy(center);
+      this.lightGroup.add(light);
+      this.lightGroup.add(new THREE.DirectionalLightHelper(light, 0.5, color));
+      this.scene.add(light.target); // target must be in scene
+      return light;
+    };
 
-    // Fill light
-    const fillLight = new THREE.DirectionalLight(fill.color, fill.intensity);
-    fillLight.position.set(-5, 5, -5);
-    this.lightGroup.add(fillLight);
-
-    // Rim light
-    const rimLight = new THREE.DirectionalLight(rim.color, rim.intensity);
-    rimLight.position.set(0, 5, -5);
-    this.lightGroup.add(rimLight);
+    // Key / Fill / Rim lights, positioned relative to bounds
+    makeDirLight(key.color, key.intensity, new THREE.Vector3(-1, 0.1, 1));   // key
+    makeDirLight(fill.color, fill.intensity, new THREE.Vector3(1, 0.05, 1)); // fill
+    makeDirLight(rim.color, rim.intensity, new THREE.Vector3(-1, 0.5, -1));   // rim
 
     this.scene.add(this.lightGroup);
+  }
+
+  private updateLights(state: State) {
+    if (!this.text) return;
+    this.setLights(state);
   }
 
   // --- Helper: center and scale a geometry ---
@@ -204,11 +218,14 @@ export class TextViewer {
     this.text = mesh;
     this.scene.add(this.text);
     this.updateControls(this.text);
+    this.updateLights(state);
   }
 
   // --- Use in setTextExtrusion ---
-  setTextExtrusion(extrusion: Extrusion, geometryScale: number) {
+  setTextExtrusion(state: State) {
     if (!this.text) return;
+
+    const { extrusion, geometryScale } = state;
 
     const oldGeometry = this.text.geometry;
     const shapes = (oldGeometry as any).parameters.shapes;
@@ -224,13 +241,13 @@ export class TextViewer {
 
     this.text.geometry = newGeometry;
     this.updateControls(this.text);
+    this.updateLights(state);
 
     if (oldGeometry) oldGeometry.dispose();
   }
 
   // === Text scene ===
   async setScene(state: State) {
-    this.setLights(state);
     this.setText(state);
   }
 
@@ -238,12 +255,36 @@ export class TextViewer {
   startLoop() {
     const tick = () => {
       const elapsedTime = this.clock.getElapsedTime() - this.timeOffset;
-      this.controls?.update();
 
-      if (this.playing) {
-        const scrollSpeed = 1; // units per second
+      if (this.playing && this.controls) {
+        const target = this.controls.target.clone();
+
+        // Vector from target → camera
+        const offset = this.camera.position.clone().sub(target);
+
+        // Convert to spherical coordinates
+        const spherical = new THREE.Spherical();
+        spherical.setFromVector3(offset);
+
+        // Small concentric circular motion parameters
+        const orbitRadius = THREE.MathUtils.degToRad(0.1); // horizontal circle
+        const verticalAmplitude = THREE.MathUtils.degToRad(0.03); // vertical motion
+        const orbitSpeed = 0.5; // radians/sec
+
+        // Continuous circular motion
+        spherical.theta += orbitRadius * Math.cos(elapsedTime * orbitSpeed); // horizontal
+        spherical.phi   += verticalAmplitude * Math.sin(elapsedTime * orbitSpeed); // vertical
+
+        // Clamp phi to avoid flipping
+        const eps = 0.001;
+        spherical.phi = THREE.MathUtils.clamp(spherical.phi, eps, Math.PI - eps);
+
+        // Convert back to Cartesian and update camera
+        this.camera.position.copy(target).add(new THREE.Vector3().setFromSpherical(spherical));
+        this.camera.lookAt(target);
       }
 
+      this.controls?.update();
       this.composer?.render();
       this.frameId = requestAnimationFrame(tick);
     };

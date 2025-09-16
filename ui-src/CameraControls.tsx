@@ -1,7 +1,6 @@
-import { State, Action, Camera } from "./reducer";
+import { Action, Camera } from "./reducer";
 import FieldSet from "./FieldSet";
 import Control from "./Control";
-import TextSliderControl from "./TextSliderControl";
 
 const CameraControls = ({
   state,
@@ -13,7 +12,7 @@ const CameraControls = ({
   return (
     <FieldSet 
       label="Camera">
-      <TextSliderControl
+      <Control
         label="Field of View"
         type="range"
         min={40}
@@ -29,22 +28,6 @@ const CameraControls = ({
             }
           })
         }} />
-      {/* <Control
-        label="Field of View"
-        type="range"
-        min={40}
-        max={100}
-        step={1}
-        value={state.fov}
-        right={<span>{state.fov}</span>}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          dispatch({
-            type: "SET_CAMERA",
-            camera: {
-              fov: e.target.valueAsNumber
-            }
-          })
-        }} /> */}
       {/* <Control
         label="Zoom"
         type="range"

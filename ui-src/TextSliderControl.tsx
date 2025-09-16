@@ -14,8 +14,8 @@ const TextSliderControl = ({ ...props }: ControlProps) => {
 
     if (!isNaN(num)) {
       const clamped = Math.min(
-        Math.max(num, props.min ?? -Infinity),
-        props.max ?? Infinity
+        Math.max(num, (props.min ?? -Infinity) as number),
+        (props.max ?? Infinity) as number
       );
 
       // snap the text input to the clamped value

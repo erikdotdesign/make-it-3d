@@ -52,7 +52,7 @@ const useTextViewer = (
 
   useEffect(() => {
     if (!viewerRef.current) return;
-    viewerRef.current.setTextExtrusion(state.extrusion, state.geometryScale);
+    viewerRef.current.setTextExtrusion(state);
   }, [state.extrusion]);
 
   useEffect(() => {

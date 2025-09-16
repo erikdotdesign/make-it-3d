@@ -35,8 +35,8 @@ const LightingControls = ({
                 label={`${lightType} Intensity`}
                 type="range"
                 min={0}
-                max={100}
-                step={0.01}
+                max={5}
+                step={0.1}
                 value={state[k as keyof Lighting].intensity}
                 right={<span>{state[k as keyof Lighting].intensity}</span>}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
