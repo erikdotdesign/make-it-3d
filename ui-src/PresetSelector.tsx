@@ -186,7 +186,7 @@ const PresetSelector = ({
         thickness: 0.4,
         ior: 1.35,
         attenuationColor: "#FFA500",
-        attenuationDistance: 1.5,
+        attenuationDistance: 0.3,
         side: "double"
       },
       lighting: {

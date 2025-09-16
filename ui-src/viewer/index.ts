@@ -243,6 +243,11 @@ export class TextViewer {
     this.updateControls(this.text);
     this.updateLights(state);
 
+    // --- Update physical material that use geometry ---
+    if (state.material.type === "physical") {
+      this.setTextMaterial(state);
+    }
+
     if (oldGeometry) oldGeometry.dispose();
   }
 
@@ -270,6 +275,7 @@ export class TextViewer {
     let material: THREE.Material;
 
     let finalThickness = thickness;
+    let finalAttenuationDistance = attenuationDistance;
 
     if (type === "physical") {
       // Calculate absolute thickness from percentage of mesh depth
@@ -277,6 +283,13 @@ export class TextViewer {
       const bbox = geometry.boundingBox!;
       const depth = bbox.max.z - bbox.min.z || 0.1; // fallback if somehow zero
       finalThickness = THREE.MathUtils.clamp(thickness, 0, 1) * depth;
+
+      // Scale attenuation distance by depth
+      const attenuationPercent = THREE.MathUtils.clamp(attenuationDistance, 0, 1);
+      const minFactor = 0.01;  // minimum 1% of depth
+      const maxFactor = 5.0;   // maximum 500% of depth
+      const attenuationFactor = minFactor + (maxFactor - minFactor) * attenuationPercent;
+      finalAttenuationDistance = attenuationFactor * Math.max(depth, 1e-6); // avoid zero depth
     }
 
     if (type === "physical") {
@@ -290,7 +303,7 @@ export class TextViewer {
         thickness: finalThickness,
         ior,
         attenuationColor,
-        attenuationDistance,
+        attenuationDistance: finalAttenuationDistance,
         side: threeSide
       });
     } else {
