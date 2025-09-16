@@ -5,12 +5,19 @@
   min-height: 0; 
   height: auto;
   aspect-ratio: 1/1;
-  background: #000;
 
   canvas {
     width: 100% !important;
     height: 100% !important;
     background: transparent !important;
+  }
+
+  &.c-canvas--dark {
+    background: #000;
+  }
+
+  &.c-canvas--light {
+    background: #fff;
   }
 }
 
@@ -21,11 +28,12 @@
   justify-content: center;
   width: 100%;
   height: 100%;
+  pointer-events: none;
 
   &.c-canvas__overlay--recording {
     align-items: start;
     justify-content: start;
-    padding: 24px;
+    padding: 16px;
   }
 }
 
@@ -57,4 +65,11 @@
     font-family: var(--font-family);
     color: var(--color-text-base-on-red);
   }
+}
+
+.c-canvas__bg-control {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 16px;
 }

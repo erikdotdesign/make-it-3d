@@ -11,6 +11,7 @@ import "./App.css";
 const App = () => {
   const [state, dispatch] = useReducer(reducer, {
     playing: true,
+    background: "dark",
     text: "",
     geometryScale: 1,
     camera: {
@@ -66,6 +67,8 @@ const App = () => {
     <main className="c-app">
       <section className="c-app__body">
         <Canvas
+          state={state}
+          dispatch={dispatch}
           canvasRef={canvasRef}
           recorderRef={recorderRef} />
         <RightControls

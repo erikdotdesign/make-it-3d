@@ -24,7 +24,7 @@ export class TextViewer {
   private composer?: EffectComposer;
   private controls?: OrbitControls;
 
-  private bloomEffect?: SelectiveBloomEffect;
+  // private bloomEffect?: SelectiveBloomEffect;
 
   private lightGroup = new THREE.Group();
 

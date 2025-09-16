@@ -1,15 +1,37 @@
+import { State, Action } from "./reducer";
 import { Recorder } from "./useRecorder";
+import Button from "./Button";
 import './Canvas.css';
 
 const Canvas = ({
+  state, 
+  dispatch,
   canvasRef,
   recorderRef
 }: {
   canvasRef: React.RefObject<HTMLCanvasElement>;
   recorderRef: Recorder;
+  state: State;
+  dispatch: (action: Action) => void;
 }) => {
   return (
-    <div className="c-canvas">
+    <div className={`c-canvas c-canvas--${state.background} figma-${state.background}`}>
+      <div className="c-canvas__bg-control">
+        <Button
+          modifier={["circle", "icon"]}
+          onClick={() => {
+            dispatch({
+              type: "SET_BACKGROUND",
+              background: state.background === "light" ? "dark" : "light"
+            })
+          }}>
+          {
+            state.background === "light"
+            ? <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="M480-360q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm0 28q-62 0-105-43t-43-105q0-62 43-105t105-43q62 0 105 43t43 105q0 62-43 105t-105 43ZM200-466H66v-28h134v28Zm694 0H760v-28h134v28ZM466-760v-134h28v134h-28Zm0 694v-134h28v134h-28ZM274-668l-82-80 19-21 81 81-18 20Zm475 477-81-81 18-20 82 80-19 21Zm-81-495 80-82 21 19-81 81-20-18ZM191-211l81-81 18 18-79 83-20-20Zm289-269Z"/></svg>
+            : <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="M483-172q-128.33 0-218.17-89.83Q175-351.67 175-480q0-113 71.5-197.5T425-783q-14 28-22 59t-8 64q0 111.67 78.17 189.83Q551.33-392 663-392q33 0 64-8t58-22q-20 107-104.5 178.5T483-172Zm0-28q88 0 158-48.5T743-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T367-660q0-20 3-40t8-40q-78 32-126.5 102T203-480q0 116 82 198t198 82Zm-10-270Z"/></svg>
+          }
+        </Button>
+      </div>
       {
         recorderRef.videoUrl
         ? <div className="c-canvas__overlay">
