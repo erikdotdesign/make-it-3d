@@ -212,7 +212,11 @@ export class TextViewer {
 
     this.normalizeGeometry(geometry);
 
-    const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ ...state.material }));
+    const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ 
+      ...state.material,
+      transparent: true,
+      flatShading: true
+    }));
     mesh.rotation.x = Math.PI; // flip vertically
 
     this.text = mesh;

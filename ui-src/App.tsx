@@ -28,6 +28,7 @@ const App = () => {
     },
     material: {
       color: "#ffffff",
+      opacity: 1,
       metalness: 0,
       roughness: 1
     },

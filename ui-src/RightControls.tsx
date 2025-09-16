@@ -5,6 +5,7 @@ import ExtrusionControls from "./ExtrusionControls";
 import MaterialControls from "./MaterialControls";
 import LightingControls from "./LightingControls";
 import PlayerControls from './PlayerControls';
+import PresetSelector from "./PresetSelector";
 import Sidebar from "./Sidebar";
 
 const RightControls = ({
@@ -21,6 +22,9 @@ const RightControls = ({
       modifier={"fixed-bottom"}>
       <div className="c-sidebar__scroll">
         <div className="c-sidebar__group">
+          <PresetSelector
+            state={state}
+            dispatch={dispatch} />
           <CameraControls
             state={state.camera}
             dispatch={dispatch} />

@@ -25,6 +25,22 @@ const MaterialControls = ({
           })
         }} />
       <Control
+        label="Opacity"
+        type="range"
+        min={0}
+        max={1}
+        step={0.01}
+        value={state.opacity}
+        right={<span>{state.opacity.toFixed(2)}</span>}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          dispatch({
+            type: "SET_MATERIAL",
+            material: {
+              opacity: e.target.valueAsNumber
+            }
+          })
+        }} />
+      <Control
         label="Metalness"
         type="range"
         min={0}

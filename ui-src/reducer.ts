@@ -16,6 +16,7 @@ export type Extrusion = {
 
 export type Material = {
   color: string;
+  opacity: number;
   metalness: number;
   roughness: number;
 };
