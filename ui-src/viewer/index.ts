@@ -260,4 +260,10 @@ export class ThreeViewer {
   setScene(state: State) { 
     this.setMesh(state); 
   }
+
+  setCamera(state: State) { 
+    this.camera.fov = state.camera.fov;
+    this.camera.updateProjectionMatrix(); 
+    this.composer?.render(); 
+  }
 }

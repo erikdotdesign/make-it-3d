@@ -26,7 +26,7 @@ export type Material = {
   ior: number;
   attenuationColor: string;
   attenuationDistance: number;
-  side: "front" | "back" | "double"
+  side: "front" | "back" | "double";
 };
 
 export type Light = {

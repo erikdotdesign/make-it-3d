@@ -20,8 +20,8 @@ const PresetSelector = ({
   const [preset, setPreset] = useState("metalic");
 
   const presets: Preset[] = [{
-    name: "Metalic Gold",
-    value: "metalic-gold",
+    name: "Gold",
+    value: "gold",
     state: {
       material: {
         type: "standard",
@@ -44,8 +44,8 @@ const PresetSelector = ({
       }
     }
   },{
-    name: "Metalic Silver",
-    value: "metalic-silver",
+    name: "Silver",
+    value: "silver",
     state: {
       material: {
         type: "standard",
@@ -68,8 +68,8 @@ const PresetSelector = ({
       }
     }
   },{
-    name: "Metalic Bronze",
-    value: "metalic-bronze",
+    name: "Bronze",
+    value: "bronze",
     state: {
       material: {
         type: "standard",
@@ -91,9 +91,7 @@ const PresetSelector = ({
         rim: { color: "#ffffff", intensity: 0.5 }
       }
     }
-  },
-  // Plastic
-  {
+  },{
     name: "Plastic",
     value: "plastic",
     state: {
@@ -117,9 +115,7 @@ const PresetSelector = ({
         rim: { color: "#ffffff", intensity: 0.3 } 
       }
     }
-  },
-  // Rubber
-  {
+  },{
     name: "Rubber",
     value: "rubber",
     state: {
@@ -143,9 +139,151 @@ const PresetSelector = ({
         rim: { color: "#ffffff", intensity: 0.2 } 
       }
     }
-  },
-  // Glass
-  {
+  },{
+    name: "Wood",
+    value: "wood",
+    state: {
+      material: {
+        type: "standard",
+        color: "#8B5A2B",   // brown wood
+        metalness: 0,
+        roughness: 0.6,
+        transparent: false,
+        opacity: 1,
+        transmission: 0,
+        thickness: 0.5,
+        ior: 1.45,
+        attenuationColor: "#8B5A2B",
+        attenuationDistance: 0.1,
+        side: "double"
+      },
+      lighting: { 
+        key: { color: "#fff", intensity: 3 }, 
+        fill: { color: "#fff", intensity: 1.5 }, 
+        rim: { color: "#fff", intensity: 0.2 } 
+      }
+    }
+  },{
+    name: "Marble",
+    value: "marble",
+    state: {
+      material: {
+        type: "standard",
+        color: "#dcdcdc",
+        metalness: 0,
+        roughness: 0.45,
+        transparent: false,
+        opacity: 1,
+        transmission: 0,
+        thickness: 0.5,
+        ior: 1.5,
+        attenuationColor: "#dcdcdc",
+        attenuationDistance: 0.1,
+        side: "double"
+      },
+      lighting: { 
+        key: { color: "#fff", intensity: 4 }, 
+        fill: { color: "#fff", intensity: 2 }, 
+        rim: { color: "#fff", intensity: 0.5 } 
+      }
+    }
+  },{
+    name: "Ruby",
+    value: "ruby",
+    state: {
+      material: {
+        type: "physical",
+        color: "#ff0000",
+        metalness: 0,
+        roughness: 0.02,
+        transparent: true,
+        opacity: 1,
+        transmission: 1,
+        thickness: 1.0,
+        ior: 2.33,
+        attenuationColor: "#ff4d4d",
+        attenuationDistance: 0.2,
+        side: "double"
+      },
+      lighting: {
+        key: { color: "#fff", intensity: 5 },
+        fill: { color: "#fff", intensity: 2.5 },
+        rim: { color: "#fff", intensity: 1 }
+      }
+    }
+  },{
+    name: "Emerald",
+    value: "emerald",
+    state: {
+      material: {
+        type: "physical",
+        color: "#00cc00",
+        metalness: 0,
+        roughness: 0.02,
+        transparent: true,
+        opacity: 1,
+        transmission: 1,
+        thickness: 1.0,
+        ior: 2.33,
+        attenuationColor: "#66ff66",
+        attenuationDistance: 0.2,
+        side: "double"
+      },
+      lighting: {
+        key: { color: "#fff", intensity: 5 },
+        fill: { color: "#fff", intensity: 2.5 },
+        rim: { color: "#fff", intensity: 1 }
+      }
+    }
+  },{
+    name: "Sapphire",
+    value: "sapphire",
+    state: {
+      material: {
+        type: "physical",
+        color: "#0000ff",
+        metalness: 0,
+        roughness: 0.02,
+        transparent: true,
+        opacity: 1,
+        transmission: 1,
+        thickness: 1.0,
+        ior: 2.33,
+        attenuationColor: "#4d4dff",
+        attenuationDistance: 0.2,
+        side: "double"
+      },
+      lighting: {
+        key: { color: "#fff", intensity: 5 },
+        fill: { color: "#fff", intensity: 2.5 },
+        rim: { color: "#fff", intensity: 1 }
+      }
+    }
+  },{
+    name: "Amethyst",
+    value: "amethyst",
+    state: {
+      material: {
+        type: "physical",
+        color: "#f000f0",
+        metalness: 0,
+        roughness: 0.02,
+        transparent: true,
+        opacity: 1,
+        transmission: 1,
+        thickness: 1.0,
+        ior: 2.33,
+        attenuationColor: "#b266b2",
+        attenuationDistance: 0.2,
+        side: "double"
+      },
+      lighting: {
+        key: { color: "#fff", intensity: 5 },
+        fill: { color: "#fff", intensity: 2.5 },
+        rim: { color: "#fff", intensity: 1 }
+      }
+    }
+  },{
     name: "Glass",
     value: "glass",
     state: {
@@ -169,9 +307,31 @@ const PresetSelector = ({
         rim: { color: "#ffffff", intensity: 0.5 } 
       }
     }
-  },
-  // Liquid
-  {
+  },{
+    name: "Ice",
+    value: "ice",
+    state: {
+      material: {
+        type: "physical",
+        color: "#cceaff",
+        metalness: 0,
+        roughness: 0.5,
+        transparent: true,
+        opacity: 1,
+        transmission: 0.9,
+        thickness: 0.7,
+        ior: 1.31,
+        attenuationColor: "#a0d8ff",
+        attenuationDistance: 0.3,
+        side: "double"
+      },
+      lighting: { 
+        key: { color: "#fff", intensity: 5 }, 
+        fill: { color: "#fff", intensity: 2 }, 
+        rim: { color: "#fff", intensity: 0.5 } 
+      }
+    }
+  },{
     name: "Liquid",
     value: "liquid",
     state: {
