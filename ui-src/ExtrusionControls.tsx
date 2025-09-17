@@ -16,10 +16,10 @@ const ExtrusionControls = ({
         label="Depth"
         type="range"
         min={0}
-        max={50}
+        max={200}
         step={1}
         value={state.depth}
-        right={<span>{state.depth.toFixed(2)}</span>}
+        right={<span>{state.depth}</span>}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           dispatch({
             type: "SET_EXTRUSION",

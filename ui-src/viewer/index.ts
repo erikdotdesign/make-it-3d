@@ -1,10 +1,8 @@
 import * as THREE from "three";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { EffectComposer, EffectPass, RenderPass, SelectiveBloomEffect } from "postprocessing";
-
+import { EffectComposer, RenderPass } from "postprocessing";
 import { disposeAndRemove } from "./utils";
-
 import { Camera, Extrusion, State } from "../reducer";
 
 const CAMERA_CONFIG = { fov: 75, near: 0.01, far: 1000 };
@@ -17,45 +15,41 @@ export interface RunnerOptions {
 }
 
 export class ThreeViewer {
+  // --- Core ---
   private scene = new THREE.Scene();
-  private camera = new THREE.PerspectiveCamera(CAMERA_CONFIG.fov, 1, CAMERA_CONFIG.near, CAMERA_CONFIG.far);
-  private renderer?: THREE.WebGLRenderer;
-
-  private composer?: EffectComposer;
+  private camera = new THREE.PerspectiveCamera(
+    CAMERA_CONFIG.fov,
+    1,
+    CAMERA_CONFIG.near,
+    CAMERA_CONFIG.far
+  );
+  private renderer!: THREE.WebGLRenderer;
+  private composer!: EffectComposer;
   private controls?: OrbitControls;
-
-  // private bloomEffect?: SelectiveBloomEffect;
-
   private lightGroup = new THREE.Group();
+  private mesh!: THREE.Mesh<THREE.ExtrudeGeometry, THREE.Material>;
 
-  private mesh!: THREE.Mesh;
-
+  // --- Animation ---
   private clock = new THREE.Clock();
   private playing = true;
   private pausedAt = 0;
   private timeOffset = 0;
-
   private frameId?: number;
 
   constructor(private host: HTMLCanvasElement, opts: RunnerOptions = {}) {
-    const { 
-      width = host.clientWidth, 
-      height = host.clientHeight, 
-      controls = true, 
-      onZoomChange 
-    } = opts;
+    const { width = host.clientWidth, height = host.clientHeight, controls = true, onZoomChange } = opts;
 
-    this.initRenderer(host, width, height);
+    this.initRenderer(width, height);
     this.initCamera(width, height);
     if (controls) this.initControls(onZoomChange);
     this.initComposer(width, height);
     this.initResizeObserver();
   }
 
-  // === Initialization Helpers ===
-  private initRenderer(host: HTMLCanvasElement, width: number, height: number) {
+  // === Initialization ===
+  private initRenderer(width: number, height: number) {
     this.renderer = new THREE.WebGLRenderer({
-      canvas: host,
+      canvas: this.host,
       antialias: true,
       alpha: true,
       preserveDrawingBuffer: true,
@@ -63,7 +57,6 @@ export class ThreeViewer {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setSize(width, height, false);
   }
-
 
   private initCamera(width: number, height: number) {
     this.camera.aspect = width / height;
@@ -74,28 +67,27 @@ export class ThreeViewer {
   }
 
   private zoomToFit(size: number = 100) {
-    if (!this.camera) return;
     const fov = THREE.MathUtils.degToRad(this.camera.fov);
     const margin = 1.5;
-    const distance = (size / 2) / Math.tan(fov / 2) * margin; // fit view
+    const distance = (size / 2) / Math.tan(fov / 2) * margin;
     this.camera.position.set(0, 0, distance);
   }
 
   private initControls(onZoomChange?: (zoom: number) => void) {
-    this.controls = new OrbitControls(this.camera, this.renderer?.domElement);
-    Object.assign(this.controls, { 
-      // enableDamping: true, 
-      // dampingFactor: 0.1, 
-      enablePan: false, 
-      enableZoom: true,
-      // minDistance: 0,
-      // maxDistance: 1
-    });
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    Object.assign(this.controls, { enablePan: false, enableZoom: true });
+
     if (onZoomChange) {
-      this.controls.addEventListener("change", () => 
-        onZoomChange(this.camera.position.distanceTo(this.controls!.target))
-      );
+      this.controls.addEventListener("change", () => {
+        onZoomChange(this.camera.position.distanceTo(this.controls!.target));
+      });
     }
+  }
+
+  private initComposer(width: number, height: number) {
+    this.composer = new EffectComposer(this.renderer, { multisampling: 4 });
+    this.composer.addPass(new RenderPass(this.scene, this.camera));
+    this.composer.setSize(width, height);
   }
 
   private initResizeObserver() {
@@ -103,280 +95,141 @@ export class ThreeViewer {
       const { clientWidth: w, clientHeight: h } = this.host;
       this.camera.aspect = w / h;
       this.camera.updateProjectionMatrix();
-      this.renderer?.setSize(w, h, false);
-      this.composer?.setSize(w, h);
+      this.renderer.setSize(w, h, false);
+      this.composer.setSize(w, h);
     }).observe(this.host);
   }
 
-  private initComposer(width: number, height: number) {
-    this.composer = new EffectComposer(this.renderer, { multisampling: 4 });
-    const renderPass = new RenderPass(this.scene, this.camera);
+  // === Mesh / Material ===
+  setMesh(state: State) {
+    disposeAndRemove(this.scene, this.mesh);
 
-    // this.bloomEffect = new SelectiveBloomEffect(this.scene, this.camera, { 
-    //   luminanceThreshold: 0, 
-    //   intensity: 1, 
-    //   radius: 0.6
-    // });
-    // const effectPass = new EffectPass(this.camera, this.bloomEffect);
+    const shapes = new SVGLoader().parse(state.svg).paths.flatMap(p => p.toShapes(true));
+    const geometry = this.centerGeometry(new THREE.ExtrudeGeometry(shapes, state.extrusion));
 
-    this.composer.addPass(renderPass);
-    // this.composer.addPass(effectPass);
-    this.composer.setSize(width, height);
+    this.mesh = new THREE.Mesh(geometry, this.createMaterial(geometry, state));
+    this.mesh.rotation.x = Math.PI;
+    this.scene.add(this.mesh);
+
+    this.updateControls(this.mesh);
+    this.setLights(state);
   }
 
-  setZoomLevel(distance: number) {
-    const dir = new THREE.Vector3();
-    this.camera.getWorldDirection(dir);
-    this.camera.position.copy(dir.multiplyScalar(-distance));
-    this.camera.updateProjectionMatrix();
+  setExtrusion(state: State) {
+    if (!this.mesh) return;
+
+    const oldGeometry = this.mesh.geometry;
+    const shapes = (oldGeometry.parameters as any).shapes as THREE.Shape[];
+    const newGeometry = this.centerGeometry(new THREE.ExtrudeGeometry(shapes, state.extrusion));
+
+    this.mesh.geometry = newGeometry;
+    this.updateControls(this.mesh);
+    this.setLights(state);
+
+    if (state.material.type === "physical") this.setMaterial(state);
+    oldGeometry.dispose();
   }
 
-  setCamera(state: State) {
-    this.camera.fov = state.camera.fov;
-    this.camera.updateProjectionMatrix();
-    this.composer?.render();
-    // this.setZoomLevel(state.camera.zoom);
+  setMaterial(state: State) {
+    if (!this.mesh) return;
+
+    const oldMaterial = this.mesh.material;
+    this.mesh.material = this.createMaterial(this.mesh.geometry, state);
+    this.mesh.material.needsUpdate = true;
+
+    if (Array.isArray(oldMaterial)) oldMaterial.forEach(m => m.dispose());
+    else oldMaterial.dispose();
   }
 
+  private createMaterial(geometry: THREE.BufferGeometry, state: State): THREE.Material {
+    const { 
+      type, color, metalness, roughness, transparent,
+      opacity, transmission, thickness, ior, attenuationColor,
+      attenuationDistance, side 
+    } = state.material;
+
+    const threeSide = side === "double" ? THREE.DoubleSide : side === "back" ? THREE.BackSide : THREE.FrontSide;
+    let finalThickness = thickness;
+    let finalAttenuation = attenuationDistance;
+
+    if (type === "physical") {
+      if (!geometry.boundingBox) geometry.computeBoundingBox();
+      const depth = geometry.boundingBox!.max.z - geometry.boundingBox!.min.z || 0.1;
+      finalThickness = THREE.MathUtils.clamp(thickness, 0, 1) * depth;
+      const factor = 0.01 + (5 - 0.01) * THREE.MathUtils.clamp(attenuationDistance, 0, 1);
+      finalAttenuation = factor * Math.max(depth, 1e-6);
+      return new THREE.MeshPhysicalMaterial({ 
+        color, metalness, roughness, transparent, opacity, transmission,
+        thickness: finalThickness, ior, attenuationColor, attenuationDistance: finalAttenuation, side: threeSide 
+      });
+    } else {
+      return new THREE.MeshStandardMaterial({ color, metalness, roughness, transparent, opacity, side: threeSide });
+    }
+  }
+
+  private centerGeometry<T extends THREE.BufferGeometry>(geometry: T) {
+    geometry.computeBoundingBox();
+    const bbox = geometry.boundingBox!;
+    const offset = new THREE.Vector3(
+      (bbox.min.x + bbox.max.x) / 2,
+      (bbox.min.y + bbox.max.y) / 2,
+      (bbox.min.z + bbox.max.z) / 2
+    );
+    geometry.translate(-offset.x, -offset.y, -offset.z);
+    return geometry;
+  }
+
+  private updateControls(target?: THREE.Object3D) {
+    if (!this.controls || !target) return;
+    const center = new THREE.Box3().setFromObject(target).getCenter(new THREE.Vector3());
+    this.controls.target.copy(center);
+    this.controls.update();
+  }
+
+  // === Lights ===
   setLights(state: State) {
     this.scene.remove(this.lightGroup);
     this.lightGroup.clear();
 
-    const { lighting } = state;
-    const { key, fill, rim } = lighting;
-
-    // --- Compute bounds from current text (or fallback) ---
     const bbox = this.mesh ? new THREE.Box3().setFromObject(this.mesh) : new THREE.Box3();
     const center = bbox.getCenter(new THREE.Vector3());
-    const size = bbox.getSize(new THREE.Vector3());
-    const radius = size.length() / 2 || 1; // fallback to 1 if empty
+    const radius = bbox.getSize(new THREE.Vector3()).length() / 2 || 1;
+    const dist = radius * 2;
 
-    const dist = radius * 2; // base multiplier for light distance
+    const { key, fill, rim } = state.lighting;
 
-    // Base illumination
     this.lightGroup.add(new THREE.AmbientLight(0xffffff, 0.5));
     this.lightGroup.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.5));
 
-    // Helper to attach a directional light pointing at the subject
     const makeDirLight = (color: THREE.ColorRepresentation, intensity: number, offset: THREE.Vector3) => {
       const light = new THREE.DirectionalLight(color, intensity);
       light.position.copy(center).add(offset.multiplyScalar(dist));
       light.target.position.copy(center);
       this.lightGroup.add(light);
       this.lightGroup.add(new THREE.DirectionalLightHelper(light, 0.5, color));
-      this.scene.add(light.target); // target must be in scene
-      return light;
+      this.scene.add(light.target);
     };
 
-    // Key / Fill / Rim lights, positioned relative to bounds
-    makeDirLight(key.color, key.intensity, new THREE.Vector3(-1, 0.1, 1));   // key
-    makeDirLight(fill.color, fill.intensity, new THREE.Vector3(1, 0.05, 1)); // fill
-    makeDirLight(rim.color, rim.intensity, new THREE.Vector3(-1, 0.5, -1));   // rim
+    makeDirLight(key.color, key.intensity, new THREE.Vector3(-1, 0.1, 1));
+    makeDirLight(fill.color, fill.intensity, new THREE.Vector3(1, 0.05, 1));
+    makeDirLight(rim.color, rim.intensity, new THREE.Vector3(-1, 0.5, -1));
 
     this.scene.add(this.lightGroup);
   }
 
-  private updateLights(state: State) {
-    if (!this.mesh) return;
-    this.setLights(state);
-  }
-
-  private centerGeometry(geometry: THREE.ExtrudeGeometry) {
-    geometry.computeBoundingBox();
-    const bbox = geometry.boundingBox!;
-    const centerX = (bbox.min.x + bbox.max.x) / 2;
-    const centerY = (bbox.min.y + bbox.max.y) / 2;
-    const centerZ = (bbox.min.z + bbox.max.z) / 2;
-    geometry.translate(-centerX, -centerY, -centerZ);
-  }
-
-  // --- Helper: update controls to focus on mesh ---
-  private updateControls(target?: THREE.Object3D) {
-    if (!this.controls || !target) return;
-    const bbox = new THREE.Box3().setFromObject(target);
-    const center = bbox.getCenter(new THREE.Vector3());
-    this.controls.target.copy(center);
-    this.controls.update();
-  }
-
-  // --- Use in setText ---
-  setMesh(state: State) {
-    disposeAndRemove(this.scene, this.mesh);
-
-    const loader = new SVGLoader();
-    const data = loader.parse(state.svg);
-    const shapes: THREE.Shape[] = data.paths.flatMap(path => path.toShapes(true));
-
-    const geometry = new THREE.ExtrudeGeometry(shapes, state.extrusion);
-
-    this.centerGeometry(geometry);
-
-    const mesh = new THREE.Mesh(geometry, this.createMaterial(geometry, state));
-    mesh.rotation.x = Math.PI; // flip vertically
-
-    this.mesh = mesh;
-    this.scene.add(this.mesh);
-    this.updateControls(this.mesh);
-    this.updateLights(state);
-  }
-
-  // --- Use in setTextExtrusion ---
-  setExtrusion(state: State) {
-    if (!this.mesh) return;
-
-    const { extrusion } = state;
-
-    const oldGeometry = this.mesh.geometry;
-    const shapes = (oldGeometry as any).parameters.shapes;
-
-    const newGeometry = new THREE.ExtrudeGeometry(shapes, extrusion);
-
-    this.centerGeometry(newGeometry);
-
-    this.mesh.geometry = newGeometry;
-    this.updateControls(this.mesh);
-    this.updateLights(state);
-
-    // --- Update physical material that use geometry ---
-    if (state.material.type === "physical") {
-      this.setMaterial(state);
-    }
-
-    if (oldGeometry) oldGeometry.dispose();
-  }
-
-  private createMaterial(geometry: THREE.BufferGeometry, state: State): THREE.Material {
-    const { 
-      type = "standard", 
-      color = "#ffffff",
-      metalness = 0, 
-      roughness = 0.5, 
-      transparent = false, 
-      opacity = 1, 
-      transmission = 0, 
-      thickness = 0.5, 
-      ior = 1.5,
-      attenuationColor = "#ffffff",
-      attenuationDistance = Infinity,
-      side = "front" 
-    } = state.material;
-
-    const threeSide =
-      side === "double" ? THREE.DoubleSide :
-      side === "back" ? THREE.BackSide :
-      THREE.FrontSide;
-
-    let material: THREE.Material;
-
-    let finalThickness = thickness;
-    let finalAttenuationDistance = attenuationDistance;
-
-    if (type === "physical") {
-      // Calculate absolute thickness from percentage of mesh depth
-      if (geometry.boundingBox === null) geometry.computeBoundingBox();
-      const bbox = geometry.boundingBox!;
-      const depth = bbox.max.z - bbox.min.z || 0.1; // fallback if somehow zero
-      finalThickness = THREE.MathUtils.clamp(thickness, 0, 1) * depth;
-
-      // Scale attenuation distance by depth
-      const attenuationPercent = THREE.MathUtils.clamp(attenuationDistance, 0, 1);
-      const minFactor = 0.01;  // minimum 1% of depth
-      const maxFactor = 5.0;   // maximum 500% of depth
-      const attenuationFactor = minFactor + (maxFactor - minFactor) * attenuationPercent;
-      finalAttenuationDistance = attenuationFactor * Math.max(depth, 1e-6); // avoid zero depth
-    }
-
-    if (type === "physical") {
-      material = new THREE.MeshPhysicalMaterial({
-        color,
-        metalness,
-        roughness,
-        transparent,
-        opacity,
-        transmission,
-        thickness: finalThickness,
-        ior,
-        attenuationColor,
-        attenuationDistance: finalAttenuationDistance,
-        side: threeSide
-      });
-    } else {
-      material = new THREE.MeshStandardMaterial({
-        color,
-        metalness,
-        roughness,
-        transparent,
-        opacity,
-        side: threeSide
-      });
-    }
-
-    return material;
-  }
-
-  // --- Use in setMaterial ---
-  setMaterial(state: State) {
-    if (!this.mesh) return;
-
-    const material = this.createMaterial(this.mesh.geometry, state);
-
-    // Dispose old material to avoid memory leaks
-    if (this.mesh.material) {
-      if (Array.isArray(this.mesh.material)) {
-        this.mesh.material.forEach(m => m.dispose());
-      } else {
-        this.mesh.material.dispose();
-      }
-    }
-
-    this.mesh.material = material;
-    this.mesh.material.needsUpdate = true;
-  }
-
-  // === Text scene ===
-  async setScene(state: State) {
-    this.setMesh(state);
-  }
-
   // === Animation ===
   startLoop() {
+    if (this.frameId) return;
+    const orbitParams = { radius: 0.1, vertical: 0.03, speed: 0.5 };
+
     const tick = () => {
-      const elapsedTime = this.clock.getElapsedTime() - this.timeOffset;
-
-      if (this.playing && this.controls) {
-        const target = this.controls.target.clone();
-
-        // Vector from target → camera
-        const offset = this.camera.position.clone().sub(target);
-
-        // Convert to spherical coordinates
-        const spherical = new THREE.Spherical();
-        spherical.setFromVector3(offset);
-
-        // Small concentric circular motion parameters
-        const orbitRadius = THREE.MathUtils.degToRad(0.1); // horizontal circle
-        const verticalAmplitude = THREE.MathUtils.degToRad(0.03); // vertical motion
-        const orbitSpeed = 0.5; // radians/sec
-
-        // Continuous circular motion
-        spherical.theta += orbitRadius * Math.cos(elapsedTime * orbitSpeed); // horizontal
-        spherical.phi   += verticalAmplitude * Math.sin(elapsedTime * orbitSpeed); // vertical
-
-        // Clamp phi to avoid flipping
-        const eps = 0.001;
-        spherical.phi = THREE.MathUtils.clamp(spherical.phi, eps, Math.PI - eps);
-
-        // Convert back to Cartesian and update camera
-        this.camera.position.copy(target).add(new THREE.Vector3().setFromSpherical(spherical));
-        this.camera.lookAt(target);
-      }
-
+      const elapsed = this.clock.getElapsedTime() - this.timeOffset;
+      if (this.playing && this.controls) this.updateCameraOrbit(elapsed, orbitParams);
       this.controls?.update();
       this.composer?.render();
       this.frameId = requestAnimationFrame(tick);
     };
-
-    if (!this.frameId) this.frameId = requestAnimationFrame(tick);
+    this.frameId = requestAnimationFrame(tick);
   }
 
   stopLoop(fullStop = false) {
@@ -385,14 +238,25 @@ export class ThreeViewer {
   }
 
   setPlaying(state: boolean) {
-    if (!state && this.playing) {
-      // going into pause
-      this.pausedAt = this.clock.getElapsedTime();
-      this.playing = false;
-    } else if (state && !this.playing) {
-      // resuming
-      this.timeOffset += this.clock.getElapsedTime() - this.pausedAt;
-      this.playing = true;
-    }
+    if (state === this.playing) return;
+    if (!state) this.pausedAt = this.clock.getElapsedTime();
+    else this.timeOffset += this.clock.getElapsedTime() - this.pausedAt;
+    this.playing = state;
   }
+
+  private updateCameraOrbit(elapsed: number, params: { radius: number; vertical: number; speed: number }) {
+    const target = this.controls!.target.clone();
+    const offset = this.camera.position.clone().sub(target);
+    const spherical = new THREE.Spherical().setFromVector3(offset);
+
+    spherical.theta += THREE.MathUtils.degToRad(params.radius) * Math.cos(elapsed * params.speed);
+    spherical.phi += THREE.MathUtils.degToRad(params.vertical) * Math.sin(elapsed * params.speed);
+    spherical.phi = THREE.MathUtils.clamp(spherical.phi, 0.001, Math.PI - 0.001);
+
+    this.camera.position.copy(target).add(new THREE.Vector3().setFromSpherical(spherical));
+    this.camera.lookAt(target);
+  }
+
+  setScene(state: State) { this.setMesh(state); }
+  setCamera(state: State) { this.camera.fov = state.camera.fov; this.camera.updateProjectionMatrix(); this.composer?.render(); }
 }

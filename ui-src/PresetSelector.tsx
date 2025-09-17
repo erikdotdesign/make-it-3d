@@ -38,9 +38,9 @@ const PresetSelector = ({
         side: "double"
       },
       lighting: {
-        key: { color: "#fff", intensity: 5 },
-        fill: { color: "#fff", intensity: 2.5 },
-        rim: { color: "#fff", intensity: 0.5 }
+        key: { color: "#ffffff", intensity: 5 },
+        fill: { color: "#ffffff", intensity: 2.5 },
+        rim: { color: "#ffffff", intensity: 0.5 }
       }
     }
   },{
@@ -62,9 +62,9 @@ const PresetSelector = ({
         side: "double"
       },
       lighting: {
-        key: { color: "#fff", intensity: 5 },
-        fill: { color: "#fff", intensity: 2.5 },
-        rim: { color: "#fff", intensity: 0.5 }
+        key: { color: "#ffffff", intensity: 5 },
+        fill: { color: "#ffffff", intensity: 2.5 },
+        rim: { color: "#ffffff", intensity: 0.5 }
       }
     }
   },{
@@ -86,9 +86,9 @@ const PresetSelector = ({
         side: "double"
       },
       lighting: {
-        key: { color: "#fff", intensity: 5 },
-        fill: { color: "#fff", intensity: 2.5 },
-        rim: { color: "#fff", intensity: 0.5 }
+        key: { color: "#ffffff", intensity: 5 },
+        fill: { color: "#ffffff", intensity: 2.5 },
+        rim: { color: "#ffffff", intensity: 0.5 }
       }
     }
   },
@@ -112,9 +112,9 @@ const PresetSelector = ({
         side: "double"
       },
       lighting: { 
-        key: { color: "#fff", intensity: 4 }, 
-        fill: { color: "#fff", intensity: 2 }, 
-        rim: { color: "#fff", intensity: 0.3 } 
+        key: { color: "#ffffff", intensity: 4 }, 
+        fill: { color: "#ffffff", intensity: 2 }, 
+        rim: { color: "#ffffff", intensity: 0.3 } 
       }
     }
   },
@@ -138,9 +138,9 @@ const PresetSelector = ({
         side: "double"
       },
       lighting: { 
-        key: { color: "#fff", intensity: 3 }, 
-        fill: { color: "#fff", intensity: 1.5 }, 
-        rim: { color: "#fff", intensity: 0.2 } 
+        key: { color: "#ffffff", intensity: 3 }, 
+        fill: { color: "#ffffff", intensity: 1.5 }, 
+        rim: { color: "#ffffff", intensity: 0.2 } 
       }
     }
   },
@@ -164,9 +164,9 @@ const PresetSelector = ({
         side: "double"
       },
       lighting: { 
-        key: { color: "#fff", intensity: 5 }, 
-        fill: { color: "#fff", intensity: 2 }, 
-        rim: { color: "#fff", intensity: 0.5 } 
+        key: { color: "#ffffff", intensity: 5 }, 
+        fill: { color: "#ffffff", intensity: 2 }, 
+        rim: { color: "#ffffff", intensity: 0.5 } 
       }
     }
   },
@@ -190,9 +190,9 @@ const PresetSelector = ({
         side: "double"
       },
       lighting: {
-        key: { color: "#fff", intensity: 5 },
-        fill: { color: "#fff", intensity: 2 },
-        rim: { color: "#fff", intensity: 0.5 }
+        key: { color: "#ffffff", intensity: 5 },
+        fill: { color: "#ffffff", intensity: 2 },
+        rim: { color: "#ffffff", intensity: 0.5 }
       }
     }
   }];

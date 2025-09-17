@@ -1,5 +1,5 @@
-import { scaleAndPositionNode, getAverageFontSize, validLayer, getNodeScale } from "./helpers";
-import { ValidLayerType, ValidNode } from "./types";
+import { scaleAndPositionNode, validLayer } from "./helpers";
+import { ValidNode } from "./types";
 
 figma.showUI(__html__, { themeColors: true, width: 816, height: 592 });
 
@@ -18,22 +18,26 @@ const getSelectionSvg = async () => {
 
   if (selection.length === 0 || !validLayer(ref)) {
     figma.ui.postMessage({ type: "no-selection" });
-    figma.notify("Select a text or vector node");
+    figma.notify("Select a text, vector, or shape node");
     return;
   }
 
-  // Flatten clone into vector outlines
-  const clone = figma.flatten([(ref as ValidNode).clone()], figma.currentPage);
+  // Clone and flatten
+  const clone = figma.union([
+    figma.flatten([(ref as ValidNode).clone()], figma.currentPage)
+  ], figma.currentPage);
+
+  // Strip clone styles
+  clone.fills = [{type: "SOLID", color: {r: 1, g: 1, b: 1}}];
+  clone.strokes = [];
+  clone.effects = [];
+  clone.opacity = 1;
+  clone.name = "make-it-3d-clone";
 
   // Resize clone
   const targetSize = 100;
   const scale = targetSize / Math.max(clone.width, clone.height);
   clone.resize(clone.width * scale, clone.height * scale);
-
-  // strip style
-  clone.fills = [{type: "SOLID", color: {r: 1, g: 1, b: 1}}];
-  clone.strokes = [];
-  clone.opacity = 1;
 
   // --- Create a 100x100 transparent frame ---
   const frame = figma.createFrame();
@@ -53,7 +57,6 @@ const getSelectionSvg = async () => {
 
   try {
     const svg = await frame.exportAsync({ format: "SVG_STRING" });
-    console.log(svg);
     figma.ui.postMessage({
       type: "selection-svg",
       svg
@@ -74,7 +77,7 @@ const addImage = async (img: string, disclaimer = false) => {
 
   const node = figma.createRectangle();
   node.fills = [{ type: "IMAGE", scaleMode: "FILL", imageHash: image.hash }];
-  node.name = "3d-text";
+  node.name = "make-it-3d";
   scaleAndPositionNode(node, 1, 1200);
   figma.currentPage.selection = [node];
   if (disclaimer) {
@@ -93,7 +96,7 @@ const addVideoOrImage = async (msg: { video: string; image: string }) => {
 
     const node = figma.createRectangle();
     node.fills = [{ type: "VIDEO", scaleMode: "FILL", videoHash: video.hash }];
-    node.name = "3d-text";
+    node.name = "make-it-3d";
     scaleAndPositionNode(node, 1, 1200);
     figma.currentPage.selection = [node];
     figma.notify(`🦩 Video added`);
@@ -107,8 +110,8 @@ const handlers: Record<string, (msg: any) => void | Promise<void>> = {
   "save-storage": (msg) => saveToStorage(msg.key, msg.value),
   "load-storage": (msg) => loadFromStorage(msg.key),
   "get-selection-svg": () => getSelectionSvg(),
-  "add-3d-text-video": (msg) => addVideoOrImage(msg),
-  "add-3d-text-image": (msg) => addImage(msg.image)
+  "add-video": (msg) => addVideoOrImage(msg),
+  "add-image": (msg) => addImage(msg.image)
 };
 
 figma.ui.onmessage = async (msg) => {

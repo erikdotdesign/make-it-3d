@@ -51,7 +51,7 @@ const useRecorder = (
         reader.onload = () => {
           parent.postMessage({
             pluginMessage: {
-              type: "add-3d-text-video",
+              type: "add-video",
               video: reader.result,
               image: stillImageDataUrl.current
             },
@@ -71,7 +71,7 @@ const useRecorder = (
     if (!canvasRef.current) return;
     const img = canvasRef.current.toDataURL("image/png");
     parent.postMessage({ pluginMessage: { 
-      type: "add-3d-text-image", 
+      type: "add-image", 
       image: img
     } }, "*");
   };
