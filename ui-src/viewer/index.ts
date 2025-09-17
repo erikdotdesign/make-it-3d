@@ -16,7 +16,7 @@ export interface RunnerOptions {
   onZoomChange?: (zoom: number) => void;
 }
 
-export class TextViewer {
+export class ThreeViewer {
   private scene = new THREE.Scene();
   private camera = new THREE.PerspectiveCamera(CAMERA_CONFIG.fov, 1, CAMERA_CONFIG.near, CAMERA_CONFIG.far);
   private renderer?: THREE.WebGLRenderer;
@@ -28,7 +28,7 @@ export class TextViewer {
 
   private lightGroup = new THREE.Group();
 
-  private text!: THREE.Mesh;
+  private mesh!: THREE.Mesh;
 
   private clock = new THREE.Clock();
   private playing = true;
@@ -70,6 +70,15 @@ export class TextViewer {
     this.camera.updateProjectionMatrix();
     this.camera.position.set(0, 0.2, 2);
     this.camera.lookAt(0, 0, 0);
+    this.zoomToFit();
+  }
+
+  private zoomToFit(size: number = 100) {
+    if (!this.camera) return;
+    const fov = THREE.MathUtils.degToRad(this.camera.fov);
+    const margin = 1.5;
+    const distance = (size / 2) / Math.tan(fov / 2) * margin; // fit view
+    this.camera.position.set(0, 0, distance);
   }
 
   private initControls(onZoomChange?: (zoom: number) => void) {
@@ -137,7 +146,7 @@ export class TextViewer {
     const { key, fill, rim } = lighting;
 
     // --- Compute bounds from current text (or fallback) ---
-    const bbox = this.text ? new THREE.Box3().setFromObject(this.text) : new THREE.Box3();
+    const bbox = this.mesh ? new THREE.Box3().setFromObject(this.mesh) : new THREE.Box3();
     const center = bbox.getCenter(new THREE.Vector3());
     const size = bbox.getSize(new THREE.Vector3());
     const radius = size.length() / 2 || 1; // fallback to 1 if empty
@@ -154,7 +163,7 @@ export class TextViewer {
       light.position.copy(center).add(offset.multiplyScalar(dist));
       light.target.position.copy(center);
       this.lightGroup.add(light);
-      // this.lightGroup.add(new THREE.DirectionalLightHelper(light, 0.5, color));
+      this.lightGroup.add(new THREE.DirectionalLightHelper(light, 0.5, color));
       this.scene.add(light.target); // target must be in scene
       return light;
     };
@@ -168,22 +177,17 @@ export class TextViewer {
   }
 
   private updateLights(state: State) {
-    if (!this.text) return;
+    if (!this.mesh) return;
     this.setLights(state);
   }
 
-  // --- Helper: center and scale a geometry ---
-  private normalizeGeometry(geometry: THREE.ExtrudeGeometry, targetSize = 1) {
+  private centerGeometry(geometry: THREE.ExtrudeGeometry) {
     geometry.computeBoundingBox();
     const bbox = geometry.boundingBox!;
-    const width = bbox.max.x - bbox.min.x;
-    const height = bbox.max.y - bbox.min.y;
-    const centerX = (bbox.max.x + bbox.min.x) / 2;
-    const centerY = (bbox.max.y + bbox.min.y) / 2;
-
-    geometry.translate(-centerX, -centerY, 0); // center
-    const scale = targetSize / Math.max(width, height);
-    geometry.scale(scale, scale, scale);
+    const centerX = (bbox.min.x + bbox.max.x) / 2;
+    const centerY = (bbox.min.y + bbox.max.y) / 2;
+    const centerZ = (bbox.min.z + bbox.max.z) / 2;
+    geometry.translate(-centerX, -centerY, -centerZ);
   }
 
   // --- Helper: update controls to focus on mesh ---
@@ -196,56 +200,46 @@ export class TextViewer {
   }
 
   // --- Use in setText ---
-  setText(state: State) {
-    disposeAndRemove(this.scene, this.text);
+  setMesh(state: State) {
+    disposeAndRemove(this.scene, this.mesh);
 
     const loader = new SVGLoader();
-    const data = loader.parse(state.text);
+    const data = loader.parse(state.svg);
     const shapes: THREE.Shape[] = data.paths.flatMap(path => path.toShapes(true));
 
-    const geometry = new THREE.ExtrudeGeometry(shapes, {
-      ...state.extrusion,
-      depth: state.extrusion.depth * state.geometryScale,
-      bevelThickness: state.extrusion.bevelThickness * state.geometryScale,
-      bevelSize: state.extrusion.bevelSize * state.geometryScale
-    });
+    const geometry = new THREE.ExtrudeGeometry(shapes, state.extrusion);
 
-    this.normalizeGeometry(geometry);
+    this.centerGeometry(geometry);
 
     const mesh = new THREE.Mesh(geometry, this.createMaterial(geometry, state));
     mesh.rotation.x = Math.PI; // flip vertically
 
-    this.text = mesh;
-    this.scene.add(this.text);
-    this.updateControls(this.text);
+    this.mesh = mesh;
+    this.scene.add(this.mesh);
+    this.updateControls(this.mesh);
     this.updateLights(state);
   }
 
   // --- Use in setTextExtrusion ---
-  setTextExtrusion(state: State) {
-    if (!this.text) return;
+  setExtrusion(state: State) {
+    if (!this.mesh) return;
 
-    const { extrusion, geometryScale } = state;
+    const { extrusion } = state;
 
-    const oldGeometry = this.text.geometry;
+    const oldGeometry = this.mesh.geometry;
     const shapes = (oldGeometry as any).parameters.shapes;
 
-    const newGeometry = new THREE.ExtrudeGeometry(shapes, {
-      ...extrusion,
-      depth: extrusion.depth * geometryScale,
-      bevelThickness: extrusion.bevelThickness * geometryScale,
-      bevelSize: extrusion.bevelSize * geometryScale
-    });
+    const newGeometry = new THREE.ExtrudeGeometry(shapes, extrusion);
 
-    this.normalizeGeometry(newGeometry);
+    this.centerGeometry(newGeometry);
 
-    this.text.geometry = newGeometry;
-    this.updateControls(this.text);
+    this.mesh.geometry = newGeometry;
+    this.updateControls(this.mesh);
     this.updateLights(state);
 
     // --- Update physical material that use geometry ---
     if (state.material.type === "physical") {
-      this.setTextMaterial(state);
+      this.setMaterial(state);
     }
 
     if (oldGeometry) oldGeometry.dispose();
@@ -321,27 +315,27 @@ export class TextViewer {
   }
 
   // --- Use in setMaterial ---
-  setTextMaterial(state: State) {
-    if (!this.text) return;
+  setMaterial(state: State) {
+    if (!this.mesh) return;
 
-    const material = this.createMaterial(this.text.geometry, state);
+    const material = this.createMaterial(this.mesh.geometry, state);
 
     // Dispose old material to avoid memory leaks
-    if (this.text.material) {
-      if (Array.isArray(this.text.material)) {
-        this.text.material.forEach(m => m.dispose());
+    if (this.mesh.material) {
+      if (Array.isArray(this.mesh.material)) {
+        this.mesh.material.forEach(m => m.dispose());
       } else {
-        this.text.material.dispose();
+        this.mesh.material.dispose();
       }
     }
 
-    this.text.material = material;
-    this.text.material.needsUpdate = true;
+    this.mesh.material = material;
+    this.mesh.material.needsUpdate = true;
   }
 
   // === Text scene ===
   async setScene(state: State) {
-    this.setText(state);
+    this.setMesh(state);
   }
 
   // === Animation ===

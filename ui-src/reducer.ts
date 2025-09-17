@@ -42,8 +42,7 @@ export type Lighting = {
 
 export type State = {
   playing: boolean;
-  text: string;
-  geometryScale: number;
+  svg: string;
   background: Background;
   camera: Camera;
   extrusion: Extrusion;
@@ -56,7 +55,7 @@ export type Action =
   | { type: "HYDRATE_STATE"; state: State } 
   | { type: "SET_PLAYING", playing: boolean } 
   | { type: "SET_BACKGROUND", background: Background } 
-  | { type: "SET_TEXT"; text: string, geometryScale: number }
+  | { type: "SET_SVG"; svg: string }
   | { type: "SET_CAMERA"; camera: Partial<Camera> }
   | { type: "SET_EXTRUSION"; extrusion: Partial<Extrusion> }
   | { type: "SET_MATERIAL"; material: Partial<Material> }
@@ -71,10 +70,9 @@ const reducer = (state: State, action: Action): State => {
       ...state, 
       background: action.background
     };
-    case "SET_TEXT": return { 
+    case "SET_SVG": return { 
       ...state, 
-      text: action.text,
-      geometryScale: action.geometryScale
+      svg: action.svg
     };
     case "SET_CAMERA": return { 
       ...state, 

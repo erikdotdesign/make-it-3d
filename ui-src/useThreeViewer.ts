@@ -1,20 +1,20 @@
 import { useEffect, useRef } from "react";
-import { TextViewer } from "./viewer";
+import { ThreeViewer } from "./viewer";
 import { State, Action } from "./reducer";
 // import useThrottled from "./useThrottled";
 
-const useTextViewer = (
+const useThreeViewer = (
   canvasRef: React.RefObject<HTMLCanvasElement>, 
   state: State,
   dispatch: (action: Action) => void
 ) => {
-  const viewerRef = useRef<TextViewer | null>(null);
+  const viewerRef = useRef<ThreeViewer | null>(null);
 
   useEffect(() => {
     if (!state.hydrated) return;
     if (!canvasRef.current) return;
 
-    const viewer = new TextViewer(canvasRef.current, { 
+    const viewer = new ThreeViewer(canvasRef.current, { 
       width: 1200,
       height: 1200,
       onZoomChange: (zoom: number) => dispatch({ type: "SET_CAMERA", camera: { zoom } })
@@ -37,12 +37,12 @@ const useTextViewer = (
 
   useEffect(() => {
     if (!viewerRef.current) return;
-    viewerRef.current.setText(state);
-  }, [state.text]);
+    viewerRef.current.setMesh(state);
+  }, [state.svg]);
 
   useEffect(() => {
     if (!viewerRef.current) return;
-    viewerRef.current.setTextMaterial(state);
+    viewerRef.current.setMaterial(state);
   }, [state.material]);
 
   useEffect(() => {
@@ -52,12 +52,12 @@ const useTextViewer = (
 
   // useThrottled(() => {
   //   if (!viewerRef.current) return;
-  //   viewerRef.current.setTextExtrusion(state.extrusion, state.geometryScale);
+  //   viewerRef.current.setTextExtrusion(state.extrusion);
   // }, [state.extrusion], 100);
 
   useEffect(() => {
     if (!viewerRef.current) return;
-    viewerRef.current.setTextExtrusion(state);
+    viewerRef.current.setExtrusion(state);
   }, [state.extrusion]);
 
   useEffect(() => {
@@ -68,4 +68,4 @@ const useTextViewer = (
   return viewerRef;
 };
 
-export default useTextViewer;
+export default useThreeViewer;

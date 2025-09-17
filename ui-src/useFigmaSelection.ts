@@ -1,27 +1,26 @@
 import { useEffect } from "react";
 import { Action } from "./reducer";
 
-const useTextSelection = (
+const useFigmaSelection = (
   dispatch: (action: Action) => void
 ) => {
 
-  const getTextSelection = () => {
+  const getSelectionSvg = () => {
     parent.postMessage({
       pluginMessage: {
-        type: "get-text-selection"
+        type: "get-selection-svg"
       },
     }, "*");
   }
 
   useEffect(() => {
-    getTextSelection();
+    getSelectionSvg();
     const handleMessage = (event: MessageEvent) => {
       const msg = event.data.pluginMessage;
-      if (msg?.type === "text-selection") {
+      if (msg?.type === "selection-svg") {
         dispatch({
-          type: "SET_TEXT",
-          text: msg.svgString,
-          geometryScale: msg.geometryScale,
+          type: "SET_SVG",
+          svg: msg.svg
         });
       }
     };
@@ -31,7 +30,7 @@ const useTextSelection = (
     };
   }, []);
 
-  return { getTextSelection };
+  return { getSelectionSvg };
 };
 
-export default useTextSelection;
+export default useFigmaSelection;

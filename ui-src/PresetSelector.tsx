@@ -34,7 +34,7 @@ const PresetSelector = ({
         thickness: 0,
         ior: 1.5,
         attenuationColor: "#ffffff",
-        attenuationDistance: Infinity,
+        attenuationDistance: 1,
         side: "double"
       },
       lighting: {
@@ -58,7 +58,7 @@ const PresetSelector = ({
         thickness: 0,
         ior: 1.5,
         attenuationColor: "#ffffff",
-        attenuationDistance: Infinity,
+        attenuationDistance: 1,
         side: "double"
       },
       lighting: {
@@ -82,7 +82,7 @@ const PresetSelector = ({
         thickness: 0,
         ior: 1.5,
         attenuationColor: "#ffffff",
-        attenuationDistance: Infinity,
+        attenuationDistance: 1,
         side: "double"
       },
       lighting: {
@@ -108,7 +108,7 @@ const PresetSelector = ({
         thickness: 0,
         ior: 1.5,
         attenuationColor: "#ffffff",
-        attenuationDistance: Infinity,
+        attenuationDistance: 1,
         side: "double"
       },
       lighting: { 
@@ -134,7 +134,7 @@ const PresetSelector = ({
         thickness: 0,
         ior: 1.5,
         attenuationColor: "#ffffff",
-        attenuationDistance: Infinity,
+        attenuationDistance: 1,
         side: "double"
       },
       lighting: { 

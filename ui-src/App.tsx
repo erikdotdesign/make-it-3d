@@ -1,7 +1,7 @@
 import { useRef, useReducer } from "react";
 import reducer from "./reducer";
-import useTextSelection from "./useTextSelection";
-import use3dText from "./useTextViewer";
+import useFigmaSelection from "./useFigmaSelection";
+import useThreeViewer from "./useThreeViewer";
 import useRecorder from "./useRecorder";
 import usePluginStorage from "./usePluginStorage";
 import Canvas from "./Canvas";
@@ -12,8 +12,7 @@ const App = () => {
   const [state, dispatch] = useReducer(reducer, {
     playing: true,
     background: "dark",
-    text: "",
-    geometryScale: 1,
+    svg: "",
     camera: {
       fov: 75,
       zoom: 5
@@ -59,9 +58,9 @@ const App = () => {
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const recorderRef = useRecorder(canvasRef);
-  const { getTextSelection } = useTextSelection(dispatch);
+  const { getSelectionSvg } = useFigmaSelection(dispatch);
 
-  const textViewer = use3dText(
+  const threeViewer = useThreeViewer(
     canvasRef, 
     state, 
     dispatch

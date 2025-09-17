@@ -29,7 +29,6 @@ const RightControls = ({
             state={state.camera}
             dispatch={dispatch} />
           <ExtrusionControls
-            geometryScale={state.geometryScale}
             state={state.extrusion}
             dispatch={dispatch} />
           <MaterialControls
