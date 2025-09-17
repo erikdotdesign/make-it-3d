@@ -63,14 +63,41 @@ export class ThreeViewer {
     this.camera.updateProjectionMatrix();
     this.camera.position.set(0, 0.2, 2);
     this.camera.lookAt(0, 0, 0);
-    this.zoomToFit();
   }
 
-  private zoomToFit(size: number = 100) {
+  private zoomToFit(padding: number = 1.2) {
+    if (!this.mesh) return;
+
+    const bbox = new THREE.Box3().setFromObject(this.mesh);
+    const center = bbox.getCenter(new THREE.Vector3());
+    const size = bbox.getSize(new THREE.Vector3());
+
+    // Calculate the distance needed to fit the bounding box in the camera frustum
     const fov = THREE.MathUtils.degToRad(this.camera.fov);
-    const margin = 1.5;
-    const distance = (size / 2) / Math.tan(fov / 2) * margin;
-    this.camera.position.set(0, 0, distance);
+    const aspect = this.camera.aspect;
+
+    // Compute horizontal and vertical distance requirements
+    const distY = (size.y / 2) / Math.tan(fov / 2);
+    const distX = (size.x / 2) / (Math.tan(fov / 2) * aspect);
+
+    // Use the largest distance
+    let distance = Math.max(distX, distY);
+
+    // Add half the depth to ensure the back of the extrude fits
+    distance += size.z / 2;
+
+    distance *= padding;
+
+    // Camera direction: assume looking along -Z in world space
+    const cameraDir = new THREE.Vector3(0, 0, 1);
+
+    this.camera.position.copy(center).add(cameraDir.multiplyScalar(distance));
+    this.camera.lookAt(center);
+
+    if (this.controls) {
+      this.controls.target.copy(center);
+      this.controls.update();
+    }
   }
 
   private initControls(onZoomChange?: (zoom: number) => void) {
@@ -159,11 +186,27 @@ export class ThreeViewer {
       const factor = 0.01 + (5 - 0.01) * THREE.MathUtils.clamp(attenuationDistance, 0, 1);
       finalAttenuation = factor * Math.max(depth, 1e-6);
       return new THREE.MeshPhysicalMaterial({ 
-        color, metalness, roughness, transparent, opacity, transmission,
-        thickness: finalThickness, ior, attenuationColor, attenuationDistance: finalAttenuation, side: threeSide 
+        color, 
+        metalness, 
+        roughness, 
+        transparent, 
+        opacity, 
+        transmission,
+        thickness: finalThickness, 
+        ior, 
+        attenuationColor, 
+        attenuationDistance: finalAttenuation, 
+        side: threeSide 
       });
     } else {
-      return new THREE.MeshStandardMaterial({ color, metalness, roughness, transparent, opacity, side: threeSide });
+      return new THREE.MeshStandardMaterial({ 
+        color, 
+        metalness, 
+        roughness, 
+        transparent, 
+        opacity, 
+        side: threeSide 
+      });
     }
   }
 
@@ -220,7 +263,7 @@ export class ThreeViewer {
   // === Animation ===
   startLoop() {
     if (this.frameId) return;
-    const orbitParams = { radius: 0.1, vertical: 0.03, speed: 0.5 };
+    const orbitParams = { radius: 0.2, vertical: 0.03, speed: 0.5 };
 
     const tick = () => {
       const elapsed = this.clock.getElapsedTime() - this.timeOffset;
@@ -259,11 +302,30 @@ export class ThreeViewer {
 
   setScene(state: State) { 
     this.setMesh(state); 
+    this.zoomToFit();
   }
 
   setCamera(state: State) { 
     this.camera.fov = state.camera.fov;
     this.camera.updateProjectionMatrix(); 
     this.composer?.render(); 
+  }
+
+  resetView() {
+    // Pause the orbit animation
+    this.setPlaying(false);
+
+    // Reset controls target to mesh center
+    this.updateControls();
+
+    // Reset camera position to face the mesh directly
+    this.zoomToFit();
+
+    // Clear animation props
+    this.pausedAt = 0;
+    this.timeOffset = 0;
+
+    // Render a single frame to apply changes immediately
+    this.composer?.render();
   }
 }

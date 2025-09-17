@@ -30,7 +30,7 @@ const useFigmaSelection = (
           type: "SET_LOADING",
           loading: false
         });
-      } else if (msg?.type === "no-selection") {
+      } else if (msg?.type === "no-selection" || msg?.type === "invalid-selection") {
         dispatch({
           type: "SET_LOADING",
           loading: false

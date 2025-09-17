@@ -88,10 +88,17 @@
 .c-canvas__controls {
   position: absolute;
   display: flex;
-  top: 0;
   right: 0;
   padding: 24px;
   z-index: 2;
+
+  &.c-canvas__controls--top {
+    top: 0;
+  }
+
+  &.c-canvas__controls--bottom {
+    bottom: 0;
+  }
 }
 
 

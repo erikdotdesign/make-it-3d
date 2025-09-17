@@ -16,8 +16,14 @@ const getSelectionSvg = async () => {
   const selection = figma.currentPage.selection;
   const ref = selection[0];
 
-  if (selection.length === 0 || !validLayer(ref)) {
+  if (selection.length === 0) {
     figma.ui.postMessage({ type: "no-selection" });
+    figma.notify("Select a text, vector, or shape node");
+    return;
+  }
+
+  if (!validLayer(ref) || selection.length > 1) {
+    figma.ui.postMessage({ type: "invalid-selection" });
     figma.notify("Select a text, vector, or shape node");
     return;
   }

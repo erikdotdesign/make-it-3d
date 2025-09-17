@@ -1,4 +1,4 @@
-import { useRef, useReducer, useState } from "react";
+import { useRef, useReducer } from "react";
 import reducer from "./reducer";
 import useFigmaSelection from "./useFigmaSelection";
 import useThreeViewer from "./useThreeViewer";
@@ -27,31 +27,22 @@ const App = () => {
     },
     material: {
       type: "standard",
-      color: "#ffffff",
-      transparent: false,
+      color: "#FFD700",
+      transparent: true,
       opacity: 1,
-      metalness: 0,
-      roughness: 1,
+      metalness: 0.96,
+      roughness: 0.23,
       transmission: 0,
       thickness: 0,
       ior: 1.5,
       attenuationColor: "#ffffff",
-      attenuationDistance: Infinity,
+      attenuationDistance: 1,
       side: "double"
     },
     lighting: {
-      key: {
-        color: "#ffffff",
-        intensity: 1,
-      },
-      fill: {
-        color: "#ffffff",
-        intensity: 0.3
-      },
-      rim: {
-        color: "#ffffff",
-        intensity: 0.2
-      }
+      key: { color: "#ffffff", intensity: 5 },
+      fill: { color: "#ffffff", intensity: 2.5 },
+      rim: { color: "#ffffff", intensity: 0.5 }
     },
     hydrated: false,
     loading: false
@@ -80,7 +71,8 @@ const App = () => {
           dispatch={dispatch}
           canvasRef={canvasRef}
           recorderRef={recorderRef}
-          getSelectionSvg={getSelectionSvg} />
+          getSelectionSvg={getSelectionSvg}
+          threeViewer={threeViewer} />
         <RightControls
           state={state}
           dispatch={dispatch}
