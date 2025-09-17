@@ -41,6 +41,12 @@
     flex-direction: column;
     gap: 24px;
   }
+
+  &.c-canvas__overlay--loading {
+    opacity: 0;
+    animation: fadeIn 0.05s;
+    animation-delay: 0.10s;
+  }
 }
 
 .c-canvas__no-svg {
@@ -86,4 +92,48 @@
   right: 0;
   padding: 24px;
   z-index: 2;
+}
+
+
+.loader {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  transform: rotateX(65deg) rotate(45deg);
+}
+
+.loader__top,
+.loader__middle,
+.loader__bottom {
+  position: absolute;
+  inset: 0;
+}
+
+.loader__top {
+  background: var(--color-text-light);
+  animation: loaderTop 1s linear infinite alternate;
+}
+
+.loader__middle {
+  background: var(--color-text-base);
+}
+
+.loader__bottom {
+  background: var(--color-text-lightest);
+  animation: loaderBottom 1s linear infinite alternate;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0 }
+  100% {  opacity: 1 }
+}
+
+@keyframes loaderTop {
+  0% { transform:  translate(0, 0) scale(1) }
+  100% {  transform: translate(-25px, -25px) scale(1) }
+}
+
+@keyframes loaderBottom {
+  0% { transform:  translate(0, 0) scale(1) }
+  100% {  transform: translate(25px, 25px) scale(1) }
 }

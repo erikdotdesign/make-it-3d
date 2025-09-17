@@ -1,4 +1,4 @@
-import { useRef, useReducer } from "react";
+import { useRef, useReducer, useState } from "react";
 import reducer from "./reducer";
 import useFigmaSelection from "./useFigmaSelection";
 import useThreeViewer from "./useThreeViewer";
@@ -53,7 +53,8 @@ const App = () => {
         intensity: 0.2
       }
     },
-    hydrated: false
+    hydrated: false,
+    loading: false
   });
 
   const canvasRef = useRef<HTMLCanvasElement>(null);

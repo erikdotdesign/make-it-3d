@@ -49,6 +49,7 @@ export type State = {
   material: Material;
   lighting: Lighting;
   hydrated: boolean;
+  loading: boolean;
 };
 
 export type Action = 
@@ -60,6 +61,7 @@ export type Action =
   | { type: "SET_EXTRUSION"; extrusion: Partial<Extrusion> }
   | { type: "SET_MATERIAL"; material: Partial<Material> }
   | { type: "SET_LIGHT"; key: "key" | "fill" | "rim", light: Partial<Light> }
+  | { type: "SET_LOADING", loading: boolean } 
   
 
 const reducer = (state: State, action: Action): State => {
@@ -96,6 +98,7 @@ const reducer = (state: State, action: Action): State => {
         }
       }
     };
+    case "SET_LOADING": return { ...state, loading: action.loading };
     default: return state;
   }
 };

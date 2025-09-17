@@ -6,6 +6,10 @@ const useFigmaSelection = (
 ) => {
 
   const getSelectionSvg = () => {
+    dispatch({
+      type: "SET_LOADING",
+      loading: true
+    });
     parent.postMessage({
       pluginMessage: {
         type: "get-selection-svg"
@@ -21,6 +25,15 @@ const useFigmaSelection = (
         dispatch({
           type: "SET_SVG",
           svg: msg.svg
+        });
+        dispatch({
+          type: "SET_LOADING",
+          loading: false
+        });
+      } else if (msg?.type === "no-selection") {
+        dispatch({
+          type: "SET_LOADING",
+          loading: false
         });
       }
     };
