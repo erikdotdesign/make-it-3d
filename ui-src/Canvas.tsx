@@ -7,16 +7,18 @@ const Canvas = ({
   state, 
   dispatch,
   canvasRef,
-  recorderRef
+  recorderRef,
+  getSelectionSvg
 }: {
   canvasRef: React.RefObject<HTMLCanvasElement>;
   recorderRef: Recorder;
   state: State;
   dispatch: (action: Action) => void;
+  getSelectionSvg: () => void;
 }) => {
   return (
     <div className={`c-canvas c-canvas--${state.background} figma-${state.background}`}>
-      <div className="c-canvas__bg-control">
+      <div className="c-canvas__controls">
         <Button
           modifier={["circle", "icon"]}
           onClick={() => {
@@ -54,6 +56,17 @@ const Canvas = ({
             <div className="c-canvas__rec-indicator">
               <span>{recorderRef.time}s</span>
             </div>
+          </div>
+        : null
+      }
+      {
+        !state.svg
+        ? <div className="c-canvas__overlay c-canvas__overlay--empty-state">
+            <svg className="c-canvas__no-svg" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="m788-286-28-28v-414q0-12-10-22t-22-10H314l-28-28h442q26 0 43 17t17 43v442Zm40 194-80-80H232q-26 0-43-17t-17-43v-516l-80-80 20-20 736 736-20 20ZM318-306l66-86 64 74 69-85-317-317v488q0 12 10 22t22 10h488L614-306H318Zm219-231Zm-77 77Z"/></svg>
+            <Button onClick={getSelectionSvg}>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="M680-158v-94h-94v-28h94v-94h28v94h94v28h-94v94h-28Zm-428-94v-122h28v94h94v28H252Zm0-334v-122h122v28h-94v94h-28Zm428 0v-94h-94v-28h122v122h-28Z"/></svg> 
+              Add selection
+            </Button>
           </div>
         : null
       }

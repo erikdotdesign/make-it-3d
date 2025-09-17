@@ -26,6 +26,7 @@
   background: var(--color-bg-z0);
   color: var(--color-text-light);
   box-shadow: 0 0 0 1px inset var(--color-border-z2);
+  gap: 8px;
 
   svg {
     fill: currentColor;

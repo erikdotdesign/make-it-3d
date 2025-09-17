@@ -206,7 +206,7 @@ export class ThreeViewer {
       light.position.copy(center).add(offset.multiplyScalar(dist));
       light.target.position.copy(center);
       this.lightGroup.add(light);
-      this.lightGroup.add(new THREE.DirectionalLightHelper(light, 0.5, color));
+      // this.lightGroup.add(new THREE.DirectionalLightHelper(light, 0.5, color));
       this.scene.add(light.target);
     };
 

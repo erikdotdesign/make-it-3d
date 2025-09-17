@@ -18,7 +18,7 @@ const App = () => {
       zoom: 5
     },
     extrusion: {
-      depth: 1,
+      depth: 10,
       bevelEnabled: true,
       bevelThickness: 0.2,
       bevelSize: 0.1,
@@ -78,7 +78,8 @@ const App = () => {
           state={state}
           dispatch={dispatch}
           canvasRef={canvasRef}
-          recorderRef={recorderRef} />
+          recorderRef={recorderRef}
+          getSelectionSvg={getSelectionSvg} />
         <RightControls
           state={state}
           dispatch={dispatch}
