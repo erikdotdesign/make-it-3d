@@ -1,7 +1,7 @@
 {
-  "name": "3d-text",
+  "name": "make-it-3d",
   "version": "1.0.0",
-  "description": "3d-text",
+  "description": "make-it-3d",
   "main": "code.js",
   "scripts": {
     "build:main": "esbuild plugin-src/code.ts --bundle --outfile=dist/code.js --target=es2017",

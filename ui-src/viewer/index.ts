@@ -7,7 +7,7 @@ import { Camera, Extrusion, State } from "../reducer";
 
 const CAMERA_CONFIG = { fov: 75, near: 0.01, far: 1000 };
 
-export interface RunnerOptions {
+export interface ViewerOptions {
   width?: number;
   height?: number;
   controls?: boolean;
@@ -36,7 +36,7 @@ export class ThreeViewer {
   private timeOffset = 0;
   private frameId?: number;
 
-  constructor(private host: HTMLCanvasElement, opts: RunnerOptions = {}) {
+  constructor(private host: HTMLCanvasElement, opts: ViewerOptions = {}) {
     const { width = host.clientWidth, height = host.clientHeight, controls = true, onZoomChange } = opts;
 
     this.initRenderer(width, height);
@@ -257,6 +257,7 @@ export class ThreeViewer {
     this.camera.lookAt(target);
   }
 
-  setScene(state: State) { this.setMesh(state); }
-  setCamera(state: State) { this.camera.fov = state.camera.fov; this.camera.updateProjectionMatrix(); this.composer?.render(); }
+  setScene(state: State) { 
+    this.setMesh(state); 
+  }
 }
