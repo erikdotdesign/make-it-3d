@@ -137,8 +137,8 @@ export class ThreeViewer {
 
   private createMaterial(geometry: THREE.BufferGeometry, state: State): THREE.Material {
     const { 
-      type, color, metalness, roughness, transparent, opacity, transmission, 
-      thickness, ior, attenuationColor, attenuationDistance, side 
+      type, color, emissive, emissiveIntensity, metalness, roughness, transparent,
+      opacity, transmission, thickness, ior, attenuationColor, attenuationDistance, side 
     } = state.material;
 
     const threeSide = side === "double" ? THREE.DoubleSide : side === "back" ? THREE.BackSide : THREE.FrontSide;
@@ -146,12 +146,18 @@ export class ThreeViewer {
     if (type === "physical") {
       if (!geometry.boundingBox) geometry.computeBoundingBox();
       const depth = geometry.boundingBox!.max.z - geometry.boundingBox!.min.z || 0.1;
-      const finalThickness = THREE.MathUtils.clamp(thickness, 0, 1) * depth;
+
+      // Ensure thickness is never 0
+      const safeThickness = THREE.MathUtils.clamp(thickness, 1e-6, 1);  
+      const finalThickness = safeThickness * depth;
+
       const factor = 0.01 + (5 - 0.01) * THREE.MathUtils.clamp(attenuationDistance, 0, 1);
       const finalAttenuation = factor * Math.max(depth, 1e-6);
 
       return new THREE.MeshPhysicalMaterial({
         color,
+        emissive, 
+        emissiveIntensity,
         metalness,
         roughness,
         transparent,
@@ -166,6 +172,8 @@ export class ThreeViewer {
     } else {
       return new THREE.MeshStandardMaterial({
         color,
+        emissive, 
+        emissiveIntensity,
         metalness,
         roughness,
         transparent,
@@ -264,11 +272,8 @@ export class ThreeViewer {
       // this.lightGroup.add(helper);
     };
 
-    // Cinematic offsets for 3-point lighting
-    addDirLight(key.color, key.intensity, new THREE.Vector3(-1, 0.2, 1), false);
-    // addDirLight(key.color, key.intensity, new THREE.Vector3(1, -0.75, 1), true);
-    addDirLight(fill.color, fill.intensity, new THREE.Vector3(1, 0.2, 1), false);
-    // addDirLight(fill.color, fill.intensity, new THREE.Vector3(-1, -0.75, 1), true);
+    addDirLight(key.color, key.intensity, new THREE.Vector3(-0.5, 0.4, 1), false);
+    addDirLight(fill.color, fill.intensity, new THREE.Vector3(0.5, 0.4, 1), false);
     addDirLight(rim.color, rim.intensity, new THREE.Vector3(-1, 0.4, -1), false);
     addDirLight(rim.color, rim.intensity, new THREE.Vector3(1, 0.4, -1), false);
   }

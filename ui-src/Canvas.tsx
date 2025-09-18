@@ -10,14 +10,14 @@ const Canvas = ({
   canvasRef,
   recorderRef,
   getSelectionSvg,
-  threeViewer
+  threeViewerRef
 }: {
   canvasRef: React.RefObject<HTMLCanvasElement>;
   recorderRef: Recorder;
   state: State;
   dispatch: (action: Action) => void;
   getSelectionSvg: () => void;
-  threeViewer: React.RefObject<ThreeViewer>;
+  threeViewerRef: React.RefObject<ThreeViewer>;
 }) => {
   return (
     <div className={`c-canvas c-canvas--${state.background} figma-${state.background}`}>
@@ -44,7 +44,7 @@ const Canvas = ({
               <Button 
                 modifier={["circle", "icon"]}
                 onClick={() => {
-                  threeViewer.current?.resetView();
+                  threeViewerRef.current?.resetView();
                   dispatch({
                     type: "SET_PLAYING",
                     playing: false

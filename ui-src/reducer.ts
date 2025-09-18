@@ -20,6 +20,8 @@ export type Material = {
   type: "standard" | "physical";
   transparent: boolean;
   color: string;
+  emissive: string;
+  emissiveIntensity: number;
   opacity: number;
   metalness: number;
   roughness: number;

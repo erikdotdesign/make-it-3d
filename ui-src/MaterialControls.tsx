@@ -2,6 +2,8 @@ import { Action, Material } from "./reducer";
 import FieldSet from "./FieldSet";
 import Control from "./Control";
 import TextColorControl from "./TextColorControl";
+import Button from "./Button";
+import { capitalize } from "./helpers";
 
 const MaterialControls = ({
   state,
@@ -13,6 +15,26 @@ const MaterialControls = ({
   return (
     <FieldSet 
       label="Material">
+      <div className="c-button-group c-button-group--radio c-button-group--padded">
+        {
+          ["standard", "physical"].map((t,i) => (
+            <Button
+              key={t}
+              modifier={["small", ...(state.type === t ? ["primary"] : [])]}
+              onClick={() => {
+                if (state.type === t) return;
+                dispatch({
+                  type: "SET_MATERIAL",
+                  material: {
+                    type: t as "standard" | "physical"
+                  }
+                })
+              }}>
+              { capitalize(t) }
+            </Button>
+          ))
+        }
+      </div>
       <TextColorControl
         label="Color"
         value={state.color}
@@ -24,26 +46,22 @@ const MaterialControls = ({
             }
           })
         }} />
-      {
-        state.type === "standard"
-        ? <Control
-            label="Opacity"
-            type="range"
-            min={0}
-            max={1}
-            step={0.01}
-            value={state.opacity}
-            right={<span>{state.opacity.toFixed(2)}</span>}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              dispatch({
-                type: "SET_MATERIAL",
-                material: {
-                  opacity: e.target.valueAsNumber
-                }
-              })
-            }} />
-        : null
-      }
+      <Control
+        label="Opacity"
+        type="range"
+        min={0}
+        max={1}
+        step={0.01}
+        value={state.opacity}
+        right={<span>{state.opacity.toFixed(2)}</span>}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          dispatch({
+            type: "SET_MATERIAL",
+            material: {
+              opacity: e.target.valueAsNumber
+            }
+          })
+        }} />
       <Control
         label="Metalness"
         type="range"
@@ -98,7 +116,7 @@ const MaterialControls = ({
             <Control
               label="Thickness"
               type="range"
-              min={0.01}
+              min={0}
               max={1}
               step={0.01}
               value={state.thickness}

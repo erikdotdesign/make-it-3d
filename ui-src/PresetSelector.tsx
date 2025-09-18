@@ -25,8 +25,10 @@ const PresetSelector = ({
     state: {
       material: {
         type: "standard",
-        color: "#FFD700",
         transparent: true,
+        color: "#FFD700",
+        emissive: "#000000",
+        emissiveIntensity: 1,
         opacity: 1,
         metalness: 1,
         roughness: 0.23,
@@ -49,8 +51,10 @@ const PresetSelector = ({
     state: {
       material: {
         type: "standard",
-        color: "#C0C0C0",
         transparent: true,
+        color: "#C0C0C0",
+        emissive: "#000000",
+        emissiveIntensity: 1,
         opacity: 1,
         metalness: 1,
         roughness: 0.23,
@@ -73,8 +77,10 @@ const PresetSelector = ({
     state: {
       material: {
         type: "standard",
-        color: "#CD7F32",
         transparent: true,
+        color: "#CD7F32",
+        emissive: "#000000",
+        emissiveIntensity: 1,
         opacity: 1,
         metalness: 1,
         roughness: 0.23,
@@ -98,6 +104,8 @@ const PresetSelector = ({
       material: { 
         type: "standard",
         color: "#ff0000", 
+        emissive: "#000000",
+        emissiveIntensity: 1,
         transparent: true,
         opacity: 1, 
         metalness: 0, 
@@ -122,6 +130,8 @@ const PresetSelector = ({
       material: { 
         type: "standard",
         color: "#228B22", 
+        emissive: "#000000",
+        emissiveIntensity: 1,
         transparent: true,
         opacity: 1, 
         metalness: 0, 
@@ -145,7 +155,9 @@ const PresetSelector = ({
     state: {
       material: {
         type: "standard",
-        color: "#8B5A2B",   // brown wood
+        color: "#8B5A2B",
+        emissive: "#000000",
+        emissiveIntensity: 1,
         metalness: 0,
         roughness: 0.6,
         transparent: false,
@@ -170,6 +182,8 @@ const PresetSelector = ({
       material: {
         type: "standard",
         color: "#dcdcdc",
+        emissive: "#000000",
+        emissiveIntensity: 1,
         metalness: 0,
         roughness: 0.45,
         transparent: false,
@@ -194,6 +208,8 @@ const PresetSelector = ({
       material: {
         type: "physical",
         color: "#ff0000",
+        emissive: "#000000",
+        emissiveIntensity: 1,
         metalness: 0,
         roughness: 0.02,
         transparent: true,
@@ -218,6 +234,8 @@ const PresetSelector = ({
       material: {
         type: "physical",
         color: "#00cc00",
+        emissive: "#000000",
+        emissiveIntensity: 1,
         metalness: 0,
         roughness: 0.02,
         transparent: true,
@@ -242,6 +260,8 @@ const PresetSelector = ({
       material: {
         type: "physical",
         color: "#0000ff",
+        emissive: "#000000",
+        emissiveIntensity: 1,
         metalness: 0,
         roughness: 0.02,
         transparent: true,
@@ -266,6 +286,8 @@ const PresetSelector = ({
       material: {
         type: "physical",
         color: "#f000f0",
+        emissive: "#000000",
+        emissiveIntensity: 1,
         metalness: 0,
         roughness: 0.02,
         transparent: true,
@@ -290,6 +312,8 @@ const PresetSelector = ({
       material: { 
         type: "physical",
         color: "#ffffff",
+        emissive: "#000000",
+        emissiveIntensity: 1,
         metalness: 0,
         roughness: 0.05,
         transparent: true,
@@ -314,6 +338,8 @@ const PresetSelector = ({
       material: {
         type: "physical",
         color: "#cceaff",
+        emissive: "#000000",
+        emissiveIntensity: 1,
         metalness: 0,
         roughness: 0.5,
         transparent: true,
@@ -338,6 +364,8 @@ const PresetSelector = ({
       material: {
         type: "physical",
         color: "#FFA500",
+        emissive: "#000000",
+        emissiveIntensity: 1,
         metalness: 0,
         roughness: 0.05,
         transparent: true,

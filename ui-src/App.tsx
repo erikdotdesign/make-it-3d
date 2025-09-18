@@ -29,8 +29,10 @@ const App = () => {
     },
     material: {
       type: "standard",
-      color: "#FFD700",
       transparent: true,
+      color: "#FFD700",
+      emissive: "#000000",
+      emissiveIntensity: 1,
       opacity: 1,
       metalness: 1,
       roughness: 0.23,
@@ -51,14 +53,15 @@ const App = () => {
   });
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const recorderRef = useRecorder(canvasRef);
-  const { getSelectionSvg } = useFigmaSelection(dispatch);
 
-  const threeViewer = useThreeViewer(
+  const threeViewerRef = useThreeViewer(
     canvasRef, 
     state, 
     dispatch
   );
+  
+  const recorderRef = useRecorder(canvasRef);
+  const { getSelectionSvg } = useFigmaSelection(dispatch);
 
   usePluginStorage(
     state, 
@@ -74,7 +77,7 @@ const App = () => {
           canvasRef={canvasRef}
           recorderRef={recorderRef}
           getSelectionSvg={getSelectionSvg}
-          threeViewer={threeViewer} />
+          threeViewerRef={threeViewerRef} />
         <RightControls
           state={state}
           dispatch={dispatch}

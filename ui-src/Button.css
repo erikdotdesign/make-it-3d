@@ -6,6 +6,24 @@
     flex-direction: column;
   }
 
+  &.c-button-group--radio {
+    .c-button {
+      border-radius: 0;
+
+      &:first-child {
+        border-radius: var(--border-radius) 0 0 var(--border-radius);
+      }
+
+      &:last-child {
+        border-radius: 0 var(--border-radius) var(--border-radius) 0;
+      }
+    }
+  }
+
+  &.c-button-group--padded {
+    padding: 8px 12px;
+  }
+
   .c-button {
     flex-grow: 2;
   } 
@@ -62,38 +80,8 @@
     }
   }
 
-  &.c-button--radio {
-    color: var(--color-text-lightest);
-    font-weight: normal;
-    box-shadow: none;
-    z-index: 2;
-    background: none;
-    border-radius: 100%;
-
-    &:hover {
-      color: var(--color-text-lighter);
-      background: var(--color-bg-z1) !important;
-    }
-  }
-
-  &.c-button--radio-active {
-    color: var(--color-text-base);
-    font-weight: bold;
-    box-shadow: 0 0 0 1px inset var(--color-border-z3) !important;
-    z-index: 2;
-    background: var(--color-bg-z1);
-
-    &:hover {
-      color: var(--color-text-base);
-      background: var(--color-bg-z1) !important;
-    }
-
-    .h-crosshair {
-      &::before,
-      &::after {
-        background: var(--color-text-base);
-      }
-    }
+  &.c-button--small {
+    padding: 4px 8px;
   }
 
   &.c-button--icon {
@@ -123,49 +111,5 @@
 
   &.c-button--circle {
     border-radius: 100%;
-  }
-
-  &.c-button--planet {
-    justify-content: flex-start;
-    overflow: visible;
-    /* gap: 24px; */
-    box-shadow: none;
-    /* padding: 16px 24px; */
-
-    &:hover {
-      box-shadow: 0 0 0 1px inset var(--color-border-z2);
-      background: none;
-    }
-  }
-}
-
-@keyframes planet-loader-anim {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 400% 50%;
-  }
-}
-
-.c-button__planet {
-  position: relative;
-  width: 24px;
-  height: 24px;
-  background-size: 48px 48px;
-  background-position: -12px -12px;
-  border-radius: 100%;
-
-  &.c-button__planet--saturn,
-  &.c-button__planet--haumea {
-    background-size: 24px 24px;
-    background-position: initial;
-  }
-
-  &.c-button__planet--loading {
-    border-radius: 100%;
-    background-image: linear-gradient(to right, var(--color-bg-z1), var(--color-bg-z2), var(--color-bg-z1));
-    background-size: 400% 100%;
-    animation: planet-loader-anim 4s linear infinite;
   }
 }
