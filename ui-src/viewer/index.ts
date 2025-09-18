@@ -121,6 +121,10 @@ export class ThreeViewer {
     this.mesh.geometry = this.centerGeometry(new THREE.ExtrudeGeometry(shapes, state.extrusion));
     oldGeometry.dispose();
 
+    if (state.material.type === "physical") {
+      this.setMaterial(state);
+    }
+ 
     this.updateScene(state);
   }
 
