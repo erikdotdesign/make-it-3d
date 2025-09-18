@@ -28,6 +28,22 @@ const ExtrusionControls = ({
             }
           })
         }} />
+      <Control
+        label="Curve Segments"
+        type="range"
+        min={1}
+        max={50}
+        step={1}
+        value={state.curveSegments}
+        right={<span>{state.curveSegments}</span>}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          dispatch({
+            type: "SET_EXTRUSION",
+            extrusion: {
+              curveSegments: e.target.valueAsNumber
+            }
+          })
+        }} />
       {/* <Control
         label="Bevel"
         type="checkbox"

@@ -6,6 +6,8 @@ export type Camera = {
 };
 
 export type Extrusion = {
+  steps: number;
+  curveSegments: number;
   depth: number;
   bevelEnabled: boolean;
   bevelThickness: number;

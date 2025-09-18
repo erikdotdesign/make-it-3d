@@ -18,11 +18,13 @@ const App = () => {
       zoom: 5
     },
     extrusion: {
+      curveSegments: 24,
+      steps: 1,
       depth: 10,
       bevelEnabled: true,
-      bevelThickness: 0.2,
-      bevelSize: 0.1,
-      bevelSegments: 3,
+      bevelThickness: 0.5,
+      bevelSize: 0.5,
+      bevelSegments: 4,
       bevelOffset: 0
     },
     material: {
@@ -30,7 +32,7 @@ const App = () => {
       color: "#FFD700",
       transparent: true,
       opacity: 1,
-      metalness: 0.96,
+      metalness: 1,
       roughness: 0.23,
       transmission: 0,
       thickness: 0,

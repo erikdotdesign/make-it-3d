@@ -88,7 +88,6 @@
 .c-canvas__controls {
   position: absolute;
   display: flex;
-  right: 0;
   padding: 24px;
   z-index: 2;
 
@@ -96,8 +95,16 @@
     top: 0;
   }
 
+  &.c-canvas__controls--right {
+    right: 0;
+  }
+
   &.c-canvas__controls--bottom {
     bottom: 0;
+  }
+
+  &.c-canvas__controls--left {
+    left: 0;
   }
 }
 
