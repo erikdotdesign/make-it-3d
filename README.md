@@ -3,7 +3,7 @@
 Turn your Figma layers into **animated or still 3D renders** with just a few clicks.  
 Extrude text, shapes, or vectors and export stunning 3D scenes directly from Figma.
 
-![cover](make-it-3d.png) 
+![cover](make-it-3d-cover.png) 
 
 ## Features
 
