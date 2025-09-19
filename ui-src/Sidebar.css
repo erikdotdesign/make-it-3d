@@ -11,7 +11,7 @@
 
   &.c-sidebar--fixed-bottom {
     .c-sidebar__scroll {
-      padding-bottom: 96px;
+      padding-bottom: 104px;
     }
     .c-sidebar__bottom {
       position: absolute;
