@@ -1,4 +1,4 @@
-import { State, Action, Extrusion } from "./reducer";
+import { Action, Extrusion } from "./reducer";
 import FieldSet from "./FieldSet";
 import Control from "./Control";
 

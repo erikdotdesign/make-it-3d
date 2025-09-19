@@ -1,7 +1,8 @@
 import { useEffect } from "react";
-import { Action } from "./reducer";
+import { State, Action } from "./reducer";
 
 const useFigmaSelection = (
+  state: State,
   dispatch: (action: Action) => void
 ) => {
 
@@ -18,7 +19,12 @@ const useFigmaSelection = (
   }
 
   useEffect(() => {
-    getSelectionSvg();
+    if (state.hydrated) {
+      getSelectionSvg();
+    }
+  }, [state.hydrated]);
+
+  useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       const msg = event.data.pluginMessage;
       if (msg?.type === "selection-svg") {

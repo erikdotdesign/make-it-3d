@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { ThreeViewer } from "./viewer";
 import { State, Action } from "./reducer";
-// import useThrottled from "./useThrottled";
 
 const useThreeViewer = (
   canvasRef: React.RefObject<HTMLCanvasElement>, 
@@ -15,8 +14,8 @@ const useThreeViewer = (
     if (!canvasRef.current) return;
 
     const viewer = new ThreeViewer(canvasRef.current, { 
-      width: 1200,
-      height: 1200,
+      width: 2400,
+      height: 2400,
       onZoomChange: (zoom: number) => dispatch({ type: "SET_CAMERA", camera: { zoom } })
     });
 
@@ -49,11 +48,6 @@ const useThreeViewer = (
     if (!viewerRef.current) return;
     viewerRef.current.setCamera(state);
   }, [state.camera]);
-
-  // useThrottled(() => {
-  //   if (!viewerRef.current) return;
-  //   viewerRef.current.setTextExtrusion(state.extrusion);
-  // }, [state.extrusion], 100);
 
   useEffect(() => {
     if (!viewerRef.current) return;

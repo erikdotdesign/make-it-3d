@@ -13,20 +13,17 @@ const usePluginStorage = (
       if (msg.type === "storage-loaded" && msg.key === "cache" && msg.value) {
         dispatch({
           type: "HYDRATE_STATE", 
+          state: {
+            ...msg.value,
+            svg: ""
+          }
+        });
+      } else {
+        dispatch({
+          type: "HYDRATE_STATE", 
           state: {} as any
         });
       }
-      // if (msg.type === "storage-loaded" && msg.key === "cache" && msg.value) {
-      //   dispatch({
-      //     type: "HYDRATE_STATE", 
-      //     state: msg.value
-      //   });
-      // } else {
-      //   dispatch({
-      //     type: "HYDRATE_STATE", 
-      //     state: {} as any
-      //   });
-      // }
     };
     window.addEventListener("message", handleMessage);
     return () => {

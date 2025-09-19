@@ -49,7 +49,7 @@ const App = () => {
       rim: { color: "#ffffff", intensity: 0.5 }
     },
     hydrated: false,
-    loading: false
+    loading: true
   });
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -61,7 +61,7 @@ const App = () => {
   );
   
   const recorderRef = useRecorder(canvasRef);
-  const { getSelectionSvg } = useFigmaSelection(dispatch);
+  const { getSelectionSvg } = useFigmaSelection(state, dispatch);
 
   usePluginStorage(
     state, 
