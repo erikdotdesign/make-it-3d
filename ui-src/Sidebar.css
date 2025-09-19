@@ -7,6 +7,7 @@
   width: 224px;
   max-height: 100vh;
   overflow: hidden;
+  background: var(--color-bg-z0);
 
   &.c-sidebar--fixed-bottom {
     .c-sidebar__scroll {
@@ -15,10 +16,20 @@
     .c-sidebar__bottom {
       position: absolute;
       bottom: 0;
-      background: color-mix(in srgb, var(--color-bg-z0) 25%, transparent);
+      background: color-mix(in srgb, var(--color-bg-z0) 75%, transparent);
       z-index: 10;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(20px);
       box-shadow: 0 1px 0 0 inset var(--color-border-z1);
+    }
+  }
+
+  &.c-sidebar--right {
+    box-shadow: 1px 0 0 0 inset var(--color-border-z1);
+
+    &.c-sidebar--fixed-bottom {
+      .c-sidebar__bottom {
+        box-shadow: 1px 1px 0 0 inset var(--color-border-z1);
+      }
     }
   }
 }

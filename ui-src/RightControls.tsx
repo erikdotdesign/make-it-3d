@@ -19,7 +19,7 @@ const RightControls = ({
 }) => {
   return (
     <Sidebar
-      modifier={"fixed-bottom"}>
+      modifier={["fixed-bottom", "right"]}>
       <div className="c-sidebar__scroll">
         <div className="c-sidebar__group">
           <PresetSelector
