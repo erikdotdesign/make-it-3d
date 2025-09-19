@@ -84,12 +84,12 @@ const addImage = async (img: string, disclaimer = false) => {
   const node = figma.createRectangle();
   node.fills = [{ type: "IMAGE", scaleMode: "FILL", imageHash: image.hash }];
   node.name = "make-it-3d";
-  scaleAndPositionNode(node, 1, 1200);
+  scaleAndPositionNode(node, 1, 2400);
   figma.currentPage.selection = [node];
   if (disclaimer) {
-    figma.notify(`🦩 Image added (a Figma pro plan is required for video 😢)`);
+    figma.notify(`Image added (a Figma pro plan is required for video 😢)`);
   } else {
-    figma.notify(`🦩 Image added`);
+    figma.notify(`Image added`);
   }
 };
 
@@ -103,9 +103,9 @@ const addVideoOrImage = async (msg: { video: string; image: string }) => {
     const node = figma.createRectangle();
     node.fills = [{ type: "VIDEO", scaleMode: "FILL", videoHash: video.hash }];
     node.name = "make-it-3d";
-    scaleAndPositionNode(node, 1, 1200);
+    scaleAndPositionNode(node, 1, 2400);
     figma.currentPage.selection = [node];
-    figma.notify(`🦩 Video added`);
+    figma.notify(`Video added`);
   } catch {
     // Fallback to image
     addImage(msg.image, true);
